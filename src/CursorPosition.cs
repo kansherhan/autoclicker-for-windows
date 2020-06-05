@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace AutoCliker
+namespace AutoClicker
 {
     public class CursorPosition
     {

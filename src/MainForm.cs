@@ -4,11 +4,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using Settings = AutoClicker.Properties.Settings;
 
-namespace AutoCliker
+namespace AutoClicker
 {
-    public partial class Main : Form
+    public partial class MainForm : Form
     {
-        private const string nameFolder = "Save";
+        public static string SaveFolder => "Save";
 
         private Random random = new Random();
 
@@ -46,15 +46,18 @@ namespace AutoCliker
                         }
                         break;
                 }
-
-                if (value != ProgramStage.None) MainTimer.Interval = (int)data.Interval;
+                
                 MainTimer.Enabled = (value != ProgramStage.None) ? true : false;
 
                 UpdateListRecords();
             }
         }
 
-        public Main()
+        private TypeWorkingClicker TypeWorkingClicker;
+
+        private ClickForm clickForm;
+
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -63,36 +66,65 @@ namespace AutoCliker
         {
             programStage = ProgramStage.None;
 
-            this.Location = Settings.Default.LocationForm;
-            this.Size = Settings.Default.SizeForm;
-            this.MainTimer.Interval = Settings.Default.Interval;
-            
+            InstallSettings();
+
+            clickForm = new ClickForm();
+            clickForm.GetDataClickes += GetDataClickes;
+
             UpdateListRecords();
         }
 
         private void Closed_Form(object sender, FormClosedEventArgs e)
         {
-            Settings.Default.LocationForm = this.Location;
-            Settings.Default.SizeForm = this.Size;
-            Settings.Default.Interval = this.MainTimer.Interval;
+            SavingSettings();
+        }
 
+        private void InstallSettings()
+        {
+            this.Location = Settings.Default.LocationForm;
+        }
+
+        private void SavingSettings()
+        {
+            Settings.Default.LocationForm = this.Location;
             Settings.Default.Save();
+        }
+
+        private void GetDataClickes(ClickData[] obj)
+        {
+            data = new Data(obj);
         }
 
         private void UpdateListRecords()
         {
             ListBoxRecord.Items.Clear();
 
-            if (Directory.Exists(nameFolder))
+            if (Directory.Exists(SaveFolder))
             {
-                string[] files = Directory.GetFiles(nameFolder);
+                string[] files = Directory.GetFiles(SaveFolder);
 
                 ListBoxRecord.Items.AddRange(files);
             }
-            else Directory.CreateDirectory(nameFolder);
+            else Directory.CreateDirectory(SaveFolder);
         }
 
-        private void StartButton_Click(object sender, EventArgs e)
+        private void StartClicker_Click(object sender, EventArgs e)
+        {
+            var typeWork = (TypeWorkingClicker)Convert.ToInt32((sender as Button).Tag);
+
+            switch (typeWork)
+            {
+                case TypeWorkingClicker.Single:
+                    SingleWorkingClicker();
+                    break;
+
+                case TypeWorkingClicker.Scene:
+                    SceneWorkingClicker();
+                    break;
+            }
+        }
+
+        private void SceneWorkingClicker()
         {
             int select = ListBoxRecord.SelectedIndex;
             if (select < 0) return;
@@ -107,13 +139,21 @@ namespace AutoCliker
             }
         }
 
-        private void RecordButton_Click(object sender, EventArgs e)
+        private void SingleWorkingClicker()
+        {
+            if (data?.ClickDatas.Count > 0)
+            {
+                ProgramStage = ProgramStage.Working;
+            }
+        }
+
+        private void RecordSceneButton_Click(object sender, EventArgs e)
         {
             if (ProgramStage == ProgramStage.None)
             {
                 RecordButton.Text = "Stop";
 
-                data = new Data((int)IntervalNumeric.Value);
+                data = new Data();
 
                 ProgramStage = ProgramStage.Recording;
             }
@@ -133,7 +173,7 @@ namespace AutoCliker
             }
         }
 
-        private void DelateButton_Click(object sender, EventArgs e)
+        private void DeleteSceneButton_Click(object sender, EventArgs e)
         {
             int select = ListBoxRecord.SelectedIndex;
 
@@ -177,16 +217,27 @@ namespace AutoCliker
 
         private void ProgramWorking()
         {
-            if (data.IntervalCount < data.IntervalIndex)
+            switch (typeWork)
             {
-                ProgramStage = ProgramStage.None;
-                MessageBox.Show("Program finished you work");
-                return;
+                case TypeWorkingClicker.Single:
+                    break;
+                case TypeWorkingClicker.Scene:
+                    break;
+            }
+
+            if (data.LastInterval != null)
+            {
+                if (data.LastInterval < data.IntervalIndex)
+                {
+                    ProgramStage = ProgramStage.None;
+                    MessageBox.Show("Program finished you work");
+                    return;
+                }
             }
 
             foreach (var click in data.ClickDatas)
             {
-                if (click.Tick == data.IntervalIndex)
+                if (click.Milisecond == data.IntervalIndex)
                 {
                     Cursor.Position = (Point)click.CursorPosition;
                     Clicker.MouseCliked(click.Mouse, click.CursorPosition);
@@ -195,5 +246,7 @@ namespace AutoCliker
 
             data.Ticked();
         }
+
+        private void SettingSingleClicker_Button(object sender, EventArgs e) => clickForm.Show();
     }
 }

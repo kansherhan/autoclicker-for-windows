@@ -1,4 +1,4 @@
-﻿namespace AutoCliker
+﻿namespace AutoClicker
 {
     public enum ProgramStage
     {

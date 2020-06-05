@@ -34,29 +34,5 @@ namespace AutoClicker.Properties {
                 this["LocationForm"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("549, 368")]
-        public global::System.Drawing.Size SizeForm {
-            get {
-                return ((global::System.Drawing.Size)(this["SizeForm"]));
-            }
-            set {
-                this["SizeForm"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public int Interval {
-            get {
-                return ((int)(this["Interval"]));
-            }
-            set {
-                this["Interval"] = value;
-            }
-        }
     }
 }

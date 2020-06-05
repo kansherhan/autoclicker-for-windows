@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace AutoCliker
+namespace AutoClicker
 {
     public static class Clicker
     {

@@ -1,39 +1,30 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 
-namespace AutoCliker
+namespace AutoClicker
 {
     public class Data
     {
-        public int Interval;
-        public int IntervalCount;
+        public int? LastInterval { get; set; } = null;
 
-        public List<ClickData> ClickDatas;
+        public List<ClickData> ClickDatas { get; set; }
 
         [JsonIgnore]
-        public int IntervalIndex;
+        public int IntervalIndex { get; set; }
 
         public static Random random = new Random();
 
         public Data() { }
 
-        public Data(int interval)
+        public Data(ClickData[] clickDatas)
         {
-            IntervalCount = IntervalIndex = 0;
-            Interval = interval;
-
             ClickDatas = new List<ClickData>();
-        }
 
-        public Data(int interval, ClickData[] clickDatas) : this(interval)
-        {
             ClickDatas.AddRange(clickDatas);
-            IntervalCount = ClickDatas.Last().Tick;
-
-            Interval = interval;
+            LastInterval = clickDatas.Last().Milisecond;
         }
 
         public void Ticked()
@@ -56,11 +47,9 @@ namespace AutoCliker
 
         public static void Save(ref Data data)
         {
-            string path = $"Save/AutoClicker_{random.Next(1000, 9999)}.json";
+            string path = $"{MainForm.SaveFolder}/AutoClicker_{random.Next(1000, 9999)}.json";
 
-            data.IntervalCount = data.ClickDatas.Last().Tick;
-
-            string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(data);
             data = null;
 
             using (var writer = new StreamWriter(path, false))
