@@ -1,6 +1,6 @@
-﻿namespace AutoClicker
+﻿namespace AutoClicker.Data.Mouse
 {
-    public enum Mouse
+    public enum EMouse
     {
         None = 0,
         LeftMouse = 1,

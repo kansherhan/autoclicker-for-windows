@@ -1,1 +1,1 @@
-AutoClicker v1.0 for Windows
+"""AutoClicker for Windows"""

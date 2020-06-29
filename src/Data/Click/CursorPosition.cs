@@ -1,11 +1,17 @@
 ﻿using System.Drawing;
 
-namespace AutoClicker
+namespace AutoClicker.Data.Click
 {
     public class CursorPosition
     {
         public int X;
         public int Y;
+
+        public CursorPosition()
+        {
+            X = 0;
+            Y = 0;
+        }
 
         public CursorPosition(int x, int y)
         {
@@ -19,14 +25,6 @@ namespace AutoClicker
             return position != null &&
                    X == position.X &&
                    Y == position.Y;
-        }
-
-        public override int GetHashCode()
-        {
-            var hashCode = 1861411795;
-            hashCode = hashCode * -1521134295 + X.GetHashCode();
-            hashCode = hashCode * -1521134295 + Y.GetHashCode();
-            return hashCode;
         }
 
         public static bool operator ==(CursorPosition left, CursorPosition right)

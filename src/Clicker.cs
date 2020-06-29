@@ -1,52 +1,53 @@
-﻿using System.Runtime.InteropServices;
+﻿using AutoClicker.Data.Click;
+using AutoClicker.Data.Mouse;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace AutoClicker
 {
     public static class Clicker
     {
-        [DllImport("user32.dll")]
-        public static extern short GetAsyncKeyState(Mouse mouse);
+        public static Dictionary<EMouse, Mouse> Mouses;
 
         [DllImport("user32.dll")]
-        public static extern void mouse_event(int dsFlags, int dx, int dy, int cButtons, int dsExtraInfo);
+        private static extern short GetAsyncKeyState(EMouse mouse);
 
-        public const int MOUSEEVENTF_LEFTDOWN = 0x02;
-        public const int MOUSEEVENTF_LEFTUP = 0x04;
+        [DllImport("user32.dll")]
+        private static extern void mouse_event(int dsFlags, int dx, int dy, int cButtons, int dsExtraInfo);
 
-        public const int MOUSEEVENTF_RIGHTDOWN = 0x08;
-        public const int MOUSEEVENTF_RIGHTUP = 0x10;
-
-        public static Mouse IsMouseDown()
+        static Clicker()
         {
-            if (GetAsyncKeyState(Mouse.LeftMouse) != 0)
+            Mouses = new Dictionary<EMouse, Mouse>()
             {
-                return Mouse.LeftMouse;
-            }
-            else if (GetAsyncKeyState(Mouse.RightMouse) != 0)
-            {
-                return Mouse.RightMouse;
-            }
-            else
-            {
-                return Mouse.None;
-            }
+                {
+                    EMouse.LeftMouse,
+                    new Mouse(EMouse.LeftMouse, 0x02, 0x04)
+                },
+                {
+                    EMouse.RightMouse,
+                    new Mouse(EMouse.RightMouse, 0x08, 0x10)
+                }
+            };
         }
 
-        public static void MouseCliked(Mouse mouse, CursorPosition position)
+        public static bool GetAsyncMouseState(EMouse mouse)
         {
-            switch (mouse)
-            {
-                case Mouse.LeftMouse:
-                    mouse_event(MOUSEEVENTF_LEFTDOWN, position.X, position.Y, 0, 0);
-                    mouse_event(MOUSEEVENTF_LEFTUP, position.X, position.Y, 0, 0);
-                    break;
+            return GetAsyncKeyState(mouse) != 0;
+        }
 
-                case Mouse.RightMouse:
-                    mouse_event(MOUSEEVENTF_RIGHTDOWN, position.X, position.Y, 0, 0);
-                    mouse_event(MOUSEEVENTF_RIGHTUP, position.X, position.Y, 0, 0);
-                    break;
-            }
-            
+        public static EMouse IsMouseDown()
+        {
+            if (GetAsyncMouseState(EMouse.LeftMouse)) return EMouse.LeftMouse;
+            else if (GetAsyncMouseState(EMouse.RightMouse)) return EMouse.RightMouse;
+            else return EMouse.None;
+        }
+
+        public static void MouseClicked(EMouse eMouse, CursorPosition position)
+        {
+            var mouse = Mouses[eMouse];
+
+            mouse_event(mouse.MouseDownCode, position.X, position.Y, 0, 0);
+            mouse_event(mouse.MouseUpCode, position.X, position.Y, 0, 0);
         }
     }
 }
