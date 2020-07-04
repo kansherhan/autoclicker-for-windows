@@ -1,1 +1,3 @@
-"""AutoClicker for Windows"""
+## AutoClicker for Windows
+
+Простая программа на c#, которая облегчит жизнь вашем пальцам!
