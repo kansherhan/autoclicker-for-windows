@@ -7,7 +7,7 @@
     <ProjectGuid>{B108DCB5-B9FB-4E2C-B7AA-31A1210FB9F1}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>AutoClicker</RootNamespace>
-    <AssemblyName>Auto Clicker</AssemblyName>
+    <AssemblyName>AutoClicker</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -67,18 +67,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Click\CursorPosition.cs" />
-    <Compile Include="Data\Click\Datas.cs" />
-    <Compile Include="Data\Mouse\EMouse.cs" />
-    <Compile Include="Data\Click\ClickData.cs" />
-    <Compile Include="Clicker.cs" />
+    <Compile Include="Data\ClickData.cs" />
+    <Compile Include="Data\Mouse.cs" />
+    <Compile Include="Data\MouseType.cs" />
+    <Compile Include="Data\Click.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Data\Mouse\Mouse.cs" />
+    <Compile Include="Data\MouseData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -86,10 +85,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="States\EState.cs" />
-    <Compile Include="States\AState.cs" />
-    <Compile Include="States\RecordingState.cs" />
-    <Compile Include="States\WorkingState.cs" />
+    <Compile Include="Worker\WorkerType.cs" />
+    <Compile Include="Worker\RecorderWorker.cs" />
+    <Compile Include="Worker\Worker.cs" />
+    <Compile Include="Worker\ClickerWorker.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

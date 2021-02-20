@@ -32,54 +32,52 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.MainTimer = new System.Windows.Forms.Timer(this.components);
             this.RecordListBox = new System.Windows.Forms.ListBox();
-            this.StartClickerButton = new System.Windows.Forms.Button();
-            this.DelateButton = new System.Windows.Forms.Button();
+            this.StartButton = new System.Windows.Forms.Button();
+            this.DeleteRecordButton = new System.Windows.Forms.Button();
             this.RecordingButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // MainTimer
             // 
-            this.MainTimer.Interval = 1;
             this.MainTimer.Tick += new System.EventHandler(this.MainTimer_Tick);
             // 
             // RecordListBox
             // 
-            this.RecordListBox.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.RecordListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.RecordListBox.FormattingEnabled = true;
-            this.RecordListBox.Location = new System.Drawing.Point(128, 12);
+            this.RecordListBox.Location = new System.Drawing.Point(146, 10);
             this.RecordListBox.Name = "RecordListBox";
-            this.RecordListBox.Size = new System.Drawing.Size(244, 238);
+            this.RecordListBox.Size = new System.Drawing.Size(453, 264);
             this.RecordListBox.TabIndex = 11;
             // 
-            // StartClickerButton
+            // StartButton
             // 
-            this.StartClickerButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.StartClickerButton.Location = new System.Drawing.Point(12, 12);
-            this.StartClickerButton.Name = "StartClickerButton";
-            this.StartClickerButton.Size = new System.Drawing.Size(110, 30);
-            this.StartClickerButton.TabIndex = 8;
-            this.StartClickerButton.Tag = "1";
-            this.StartClickerButton.Text = "Start";
-            this.StartClickerButton.UseVisualStyleBackColor = true;
-            this.StartClickerButton.Click += new System.EventHandler(this.StartClickerButton_Click);
+            this.StartButton.Location = new System.Drawing.Point(10, 10);
+            this.StartButton.Name = "StartButton";
+            this.StartButton.Size = new System.Drawing.Size(130, 30);
+            this.StartButton.TabIndex = 8;
+            this.StartButton.Tag = "1";
+            this.StartButton.Text = "Start";
+            this.StartButton.UseVisualStyleBackColor = true;
+            this.StartButton.Click += new System.EventHandler(this.StartClickerButton_Click);
             // 
-            // DelateButton
+            // DeleteRecordButton
             // 
-            this.DelateButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.DelateButton.Location = new System.Drawing.Point(12, 84);
-            this.DelateButton.Name = "DelateButton";
-            this.DelateButton.Size = new System.Drawing.Size(110, 30);
-            this.DelateButton.TabIndex = 10;
-            this.DelateButton.Text = "Delete record";
-            this.DelateButton.UseVisualStyleBackColor = true;
-            this.DelateButton.Click += new System.EventHandler(this.DeleteButton_Click);
+            this.DeleteRecordButton.Location = new System.Drawing.Point(10, 82);
+            this.DeleteRecordButton.Name = "DeleteRecordButton";
+            this.DeleteRecordButton.Size = new System.Drawing.Size(130, 30);
+            this.DeleteRecordButton.TabIndex = 10;
+            this.DeleteRecordButton.Text = "Delete record";
+            this.DeleteRecordButton.UseVisualStyleBackColor = true;
+            this.DeleteRecordButton.Click += new System.EventHandler(this.DeleteButton_Click);
             // 
             // RecordingButton
             // 
-            this.RecordingButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.RecordingButton.Location = new System.Drawing.Point(12, 48);
+            this.RecordingButton.Location = new System.Drawing.Point(10, 46);
             this.RecordingButton.Name = "RecordingButton";
-            this.RecordingButton.Size = new System.Drawing.Size(110, 30);
+            this.RecordingButton.Size = new System.Drawing.Size(130, 30);
             this.RecordingButton.TabIndex = 9;
             this.RecordingButton.Text = "Recording";
             this.RecordingButton.UseVisualStyleBackColor = true;
@@ -89,20 +87,19 @@
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(384, 262);
+            this.ClientSize = new System.Drawing.Size(613, 302);
             this.Controls.Add(this.RecordListBox);
-            this.Controls.Add(this.StartClickerButton);
-            this.Controls.Add(this.DelateButton);
+            this.Controls.Add(this.StartButton);
+            this.Controls.Add(this.DeleteRecordButton);
             this.Controls.Add(this.RecordingButton);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(400, 300);
             this.MinimumSize = new System.Drawing.Size(400, 300);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Auto Clicker";
+            this.Text = "AutoClicker";
+            this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.ResumeLayout(false);
 
         }
@@ -110,8 +107,8 @@
         #endregion
         private System.Windows.Forms.Timer MainTimer;
         private System.Windows.Forms.ListBox RecordListBox;
-        private System.Windows.Forms.Button StartClickerButton;
-        private System.Windows.Forms.Button DelateButton;
+        private System.Windows.Forms.Button StartButton;
+        private System.Windows.Forms.Button DeleteRecordButton;
         private System.Windows.Forms.Button RecordingButton;
     }
 }
