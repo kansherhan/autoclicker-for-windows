@@ -8,7 +8,7 @@ namespace AutoClicker
 {
     public partial class MainForm : Form
     {
-        private bool isRecording = false;
+        private bool isRecording;
 
         private AbstractWorker worker;
         private AbstractWorker Worker
@@ -26,6 +26,8 @@ namespace AutoClicker
         public MainForm()
         {
             InitializeComponent();
+
+            isRecording = false;
 
             UpdateRecordList();
         }

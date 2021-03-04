@@ -25,50 +25,84 @@ namespace AutoClicker.Data
         [DllImport("user32.dll")]
         private static extern void mouse_event(int dsFlags, int dx, int dy, int cButtons, int dsExtraInfo);
 
-        public MouseType MouseState { get; private set; }
+        public MouseType MouseType { get; private set; }
+        public MouseState MouseState { get; private set; }
 
-        public Action<MouseType> OnMouseChanged;
+        public event EventHandler<MouseEventArgs> MouseChanged;
 
         public Mouse()
         {
-            MouseState = MouseType.None;
+            MouseType = MouseType.None;
+            MouseState = MouseState.None;
         }
 
         public void UpdateData()
         {
-            var mouseType = KnowMouseDown();
+            var type = KnowMouseDown();
 
-            if (MouseState != mouseType)
+            if (MouseType != type)
             {
-                MouseState = mouseType;
-                OnMouseChanged?.Invoke(mouseType);
+                MouseType = type;
+
+                var args = new MouseEventArgs(MouseType, MouseState);
+
+                MouseChanged?.Invoke(this, args);
             }
         }
 
-        public static bool GetMouseState(MouseType mouse)
+        public static bool GetAsyncMouseState(MouseType type)
         {
-            return GetAsyncKeyState(mouse) != 0;
+            return GetAsyncKeyState(type) != 0;
         }
 
         public static MouseType KnowMouseDown()
         {
-            if (GetMouseState(MouseType.LeftMouse)) return MouseType.LeftMouse;
-            else if (GetMouseState(MouseType.RightMouse)) return MouseType.RightMouse;
+            if (GetAsyncMouseState(MouseType.LeftMouse)) return MouseType.LeftMouse;
+            else if (GetAsyncMouseState(MouseType.RightMouse)) return MouseType.RightMouse;
             else return MouseType.None;
         }
 
-        public static void Click(MouseType mouseType, Point position)
+        public static void Click(MouseType type, Point position)
         {
-            if (mouseType != MouseType.None)
+            if (type != MouseType.None)
             {
-                var mouse = mouses[mouseType];
+                var mouse = mouses[type];
 
-                if (mouse.MouseType != MouseType.None)
-                {
-                    mouse_event(mouse.DownCode, position.X, position.Y, 0, 0);
-                    mouse_event(mouse.UpCode, position.X, position.Y, 0, 0);
-                }
+                mouse_event(mouse.DownCode, position.X, position.Y, 0, 0);
+                mouse_event(mouse.UpCode, position.X, position.Y, 0, 0);
             }
+        }
+
+        public static void MouseDown(MouseType type, Point position)
+        {
+            if (type != MouseType.None)
+            {
+                var mouse = mouses[type];
+
+                mouse_event(mouse.DownCode, position.X, position.Y, 0, 0);
+            }
+        }
+
+        public static void MouseUp(MouseType type, Point position)
+        {
+            if (type != MouseType.None)
+            {
+                var mouse = mouses[type];
+
+                mouse_event(mouse.UpCode, position.X, position.Y, 0, 0);
+            }
+        }
+    }
+
+    public class MouseEventArgs : EventArgs
+    {
+        public MouseState MouseState { get; }
+        public MouseType MouseType { get; }
+
+        public MouseEventArgs(MouseType type, MouseState state)
+        {
+            MouseType = type;
+            MouseState = state;
         }
     }
 }

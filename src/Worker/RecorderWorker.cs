@@ -1,4 +1,5 @@
 ﻿using AutoClicker.Data;
+using AutoClickerMouseEventArgs = AutoClicker.Data.MouseEventArgs;
 using System.Windows.Forms;
 
 namespace AutoClicker.Worker
@@ -15,12 +16,15 @@ namespace AutoClicker.Worker
             data = new ClickData();
             mouse = new Mouse();
 
-            mouse.OnMouseChanged += OnMouseChanged;
+            mouse.MouseChanged += OnMouseChanged;
         }
 
-        private void OnMouseChanged(MouseType mouseType)
+        private void OnMouseChanged(object sender, AutoClickerMouseEventArgs e)
         {
-            data.AddData(Interval, mouseType, Cursor.Position);
+            if (e.MouseType != MouseType.None)
+            {
+                data.AddData(Interval, e.MouseType, Cursor.Position);
+            }
         }
 
         public override void Work()

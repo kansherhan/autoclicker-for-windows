@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>AutoClicker</RootNamespace>
     <AssemblyName>AutoClicker</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -54,11 +54,9 @@
     <ApplicationIcon>Icons\icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\csharp dll-s\Newtonsoft.Json.12.0.2\lib\net20\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -69,6 +67,8 @@
   <ItemGroup>
     <Compile Include="Data\ClickData.cs" />
     <Compile Include="Data\Mouse.cs" />
+    <Compile Include="Data\MousePosition.cs" />
+    <Compile Include="Data\MouseState.cs" />
     <Compile Include="Data\MouseType.cs" />
     <Compile Include="Data\Click.cs" />
     <Compile Include="MainForm.cs">
@@ -85,6 +85,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Utils\JsonConvert.cs" />
     <Compile Include="Worker\WorkerType.cs" />
     <Compile Include="Worker\RecorderWorker.cs" />
     <Compile Include="Worker\Worker.cs" />

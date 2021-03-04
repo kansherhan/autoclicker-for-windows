@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using AutoClicker.Utils;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace AutoClicker.Data
 {
@@ -16,22 +17,19 @@ namespace AutoClicker.Data
             Clicks = new List<Click>();
         }
 
-        public ClickData(Click[] clickDatas) : this()
+        public ClickData(Click[] clickDatas)
         {
-            Clicks.AddRange(clickDatas);
+            Clicks = new List<Click>(clickDatas);
         }
 
         public void AddData(int interval, MouseType mouse, Point cursorPosition)
         {
-            if (mouse != MouseType.None)
-            {
-                Clicks.Add(new Click(interval, mouse, cursorPosition));
-            }
+            Clicks.Add(new Click(interval, mouse, cursorPosition));
         }
 
-        public Click Pop()
+        public Click GetClickAndRemoveHim()
         {
-            var click = Clicks[0];
+            var click = Clicks.First();
 
             Clicks.RemoveAt(0);
 
@@ -44,7 +42,7 @@ namespace AutoClicker.Data
 
             var path = $"{SaveFolderPath}/AutoClicker_{today}.json";
 
-            var json = JsonConvert.SerializeObject(this);
+            var json = JsonConvert.ToJson(this);
 
             using (var writer = new StreamWriter(path, false))
             {
@@ -61,7 +59,7 @@ namespace AutoClicker.Data
                 json = reader.ReadToEnd();
             }
 
-            return JsonConvert.DeserializeObject<ClickData>(json);
+            return JsonConvert.FromJson<ClickData>(json);
         }
     }
 }

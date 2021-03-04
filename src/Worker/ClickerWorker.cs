@@ -1,6 +1,7 @@
 ﻿using AutoClicker.Data;
 using AutoClickerMouse = AutoClicker.Data.Mouse;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace AutoClicker.Worker
 {
@@ -14,7 +15,7 @@ namespace AutoClicker.Worker
         {
             WorkerType = WorkerType.Clicker;
 
-            selectClick = data.Pop();
+            selectClick = data.GetClickAndRemoveHim();
             this.data = data;
         }
 
@@ -26,10 +27,12 @@ namespace AutoClicker.Worker
                 {
                     if (selectClick.Milisecond <= Interval)
                     {
-                        Cursor.Position = selectClick.CursorPosition;
-                        AutoClickerMouse.Click(selectClick.MouseType, selectClick.CursorPosition);
+                        var position = (Point)selectClick.CursorPosition;
 
-                        selectClick = data.Pop();
+                        Cursor.Position = position;
+                        AutoClickerMouse.Click(selectClick.MouseType, position);
+
+                        selectClick = data.GetClickAndRemoveHim();
                     }
 
                     base.Work();
