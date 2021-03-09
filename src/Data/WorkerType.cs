@@ -1,4 +1,4 @@
-﻿namespace AutoClicker.Worker
+﻿namespace AutoClicker.Data
 {
     public enum WorkerType
     {

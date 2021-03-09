@@ -21,7 +21,7 @@ namespace AutoClicker
             }
         }
 
-        private int RecordListSelectItemIndex => RecordListBox.SelectedIndex;
+        private int RecordItemIndex => RecordListBox.SelectedIndex;
 
         public MainForm()
         {
@@ -34,9 +34,9 @@ namespace AutoClicker
 
         private void StartClickerButton_Click(object sender, EventArgs e)
         {
-            if (RecordListSelectItemIndex >= 0)
+            if (RecordItemIndex >= 0)
             {
-                var path = RecordListBox.Items[RecordListSelectItemIndex].ToString();
+                var path = RecordListBox.Items[RecordItemIndex].ToString();
 
                 if (File.Exists(path))
                 {
@@ -52,6 +52,14 @@ namespace AutoClicker
 
                     WindowState = FormWindowState.Minimized;
                 }
+                else
+                {
+                    MessageBox.Show("File not found.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Select item.");
             }
         }
 
@@ -89,30 +97,19 @@ namespace AutoClicker
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
-            if (RecordListSelectItemIndex >= 0)
+            if (RecordItemIndex >= 0)
             {
-                File.Delete(RecordListBox.Items[RecordListSelectItemIndex].ToString());
+                var path = RecordListBox.Items[RecordItemIndex].ToString();
+
+                File.Delete(path);
 
                 UpdateRecordList();
             }
         }
 
-        private void UpdateRecordList()
-        {
-            RecordListBox.Items.Clear();
-
-            if (Directory.Exists(ClickData.SaveFolderPath))
-            {
-                string[] files = Directory.GetFiles(ClickData.SaveFolderPath);
-
-                RecordListBox.Items.AddRange(files);
-            }
-            else Directory.CreateDirectory(ClickData.SaveFolderPath);
-        }
-
         private void MainTimer_Tick(object sender, EventArgs e)
         {
-            if (!Worker.IsFinish)
+            if (Worker != null && !Worker.IsFinish)
             {
                 Worker.Work();
             }
@@ -139,6 +136,19 @@ namespace AutoClicker
             DeleteRecordButton.Enabled = true;
 
             WindowState = FormWindowState.Normal;
+        }
+
+        private void UpdateRecordList()
+        {
+            RecordListBox.Items.Clear();
+
+            if (Directory.Exists(ClickData.SaveFolderPath))
+            {
+                var files = Directory.GetFiles(ClickData.SaveFolderPath);
+
+                RecordListBox.Items.AddRange(files);
+            }
+            else Directory.CreateDirectory(ClickData.SaveFolderPath);
         }
     }
 }

@@ -4,9 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text;
-using System.Text.RegularExpressions;
+using System.Runtime.Serialization;
 
 namespace AutoClicker.Utils
 {
@@ -14,680 +13,617 @@ namespace AutoClicker.Utils
     {
         public static string ToJson(object obj)
         {
-            var writer = new JsonWriter(obj);
-
-            return writer.GetJson();
+            return new JsonWriter(obj).Json.ToString();
         }
 
         public static T FromJson<T>(string json)
         {
-            var reader = new JsonReader<T>(json);
+            return new JsonReader<T>(json).Value;
+        }
+    }
 
-            return reader.GetValue();
+    public class JsonWriter
+    {
+        public const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
+
+        public StringBuilder Json { get; private set; }
+
+        public JsonWriter(object obj)
+        {
+            Json = new StringBuilder();
+
+            AppendValue(obj);
         }
 
-        public class JsonWriter
+        private void AppendValue(object obj)
         {
-            public StringBuilder Json { get; private set; }
-
-            public JsonWriter(object obj)
+            if (obj != null)
             {
-                Json = new StringBuilder();
+                var type = obj.GetType();
 
-                AppendValue(obj);
-            }
-
-            public string GetJson()
-            {
-                return Json.ToString();
-            }
-
-            private void AppendValue(object obj)
-            {
-                if (obj != null)
+                if (type == typeof(string) || type == typeof(char))
                 {
-                    var type = obj.GetType();
+                    Json.Append('"');
 
-                    if (type == typeof(string) || type == typeof(char))
+                    var text = obj.ToString();
+
+                    foreach (var symbol in text)
                     {
-                        Json.Append('"');
-
-                        var text = obj.ToString();
-
-                        foreach (var symbol in text)
+                        if (symbol < ' ' || symbol == '"' || symbol == '\\')
                         {
-                            if (symbol < ' ' || symbol == '"' || symbol == '\\')
+                            Json.Append('\\');
+
+                            int j = "\"\\\n\r\t\b\f".IndexOf(symbol);
+
+                            if (j >= 0)
                             {
-                                Json.Append('\\');
-
-                                int j = "\"\\\n\r\t\b\f".IndexOf(symbol);
-
-                                if (j >= 0)
-                                {
-                                    Json.Append("\"\\nrtbf"[j]);
-                                }
-                                else
-                                {
-                                    Json.AppendFormat("u{0:X4}", (uint)symbol);
-                                }
+                                Json.Append("\"\\nrtbf"[j]);
                             }
                             else
                             {
-                                Json.Append(symbol);
+                                Json.AppendFormat("u{0:X4}", (uint)symbol);
                             }
                         }
+                        else
+                        {
+                            Json.Append(symbol);
+                        }
+                    }
 
-                        Json.Append('"');
-                    }
-                    else if (type == typeof(byte) || type == typeof(sbyte))
-                    {
-                        Json.Append(obj.ToString());
-                    }
-                    else if (type == typeof(short) || type == typeof(ushort))
-                    {
-                        Json.Append(obj.ToString());
-                    }
-                    else if (type == typeof(int) || type == typeof(uint))
-                    {
-                        Json.Append(obj.ToString());
-                    }
-                    else if (type == typeof(long) || type == typeof(ulong))
-                    {
-                        Json.Append(obj.ToString());
-                    }
-                    else if (type == typeof(float))
-                    {
-                        var number = (float)obj;
-                        var text = number.ToString(CultureInfo.InvariantCulture);
+                    Json.Append('"');
+                }
+                else if (type == typeof(byte) || type == typeof(sbyte))
+                {
+                    Json.Append(obj.ToString());
+                }
+                else if (type == typeof(short) || type == typeof(ushort))
+                {
+                    Json.Append(obj.ToString());
+                }
+                else if (type == typeof(int) || type == typeof(uint))
+                {
+                    Json.Append(obj.ToString());
+                }
+                else if (type == typeof(long) || type == typeof(ulong))
+                {
+                    Json.Append(obj.ToString());
+                }
+                else if (type == typeof(float))
+                {
+                    var number = (float)obj;
+                    var text = number.ToString(CultureInfo.InvariantCulture);
 
-                        Json.Append(text);
-                    }
-                    else if (type == typeof(double))
-                    {
-                        var number = (double)obj;
-                        var text = number.ToString(CultureInfo.InvariantCulture);
+                    Json.Append(text);
+                }
+                else if (type == typeof(double))
+                {
+                    var number = (double)obj;
+                    var text = number.ToString(CultureInfo.InvariantCulture);
 
-                        Json.Append(text);
-                    }
-                    else if (type == typeof(decimal))
-                    {
-                        var number = (decimal)obj;
-                        var text = number.ToString(CultureInfo.InvariantCulture);
+                    Json.Append(text);
+                }
+                else if (type == typeof(decimal))
+                {
+                    var number = (decimal)obj;
+                    var text = number.ToString(CultureInfo.InvariantCulture);
 
-                        Json.Append(text);
-                    }
-                    else if (type == typeof(bool))
-                    {
-                        var value = (bool)obj;
-                        var text = value ? "true" : "false";
+                    Json.Append(text);
+                }
+                else if (type == typeof(bool))
+                {
+                    var value = (bool)obj;
+                    var text = value ? "true" : "false";
 
-                        Json.Append(text);
-                    }
-                    else if (type.IsEnum)
-                    {
-                        var number = (int)obj;
+                    Json.Append(text);
+                }
+                else if (type.IsEnum)
+                {
+                    var number = (int)obj;
 
-                        Json.Append(number);
+                    Json.Append(number);
+                }
+                else if (type.IsArray)
+                {
+                    Json.Append('[');
+
+                    var array = obj as Array;
+
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            Json.Append(',');
+                        }
+
+                        AppendValue(array.GetValue(i));
                     }
-                    else if (type.IsArray)
+
+                    Json.Append(']');
+                }
+                else if (type.IsGenericType)
+                {
+                    var typeDefinition = type.GetGenericTypeDefinition();
+
+                    if (typeDefinition == typeof(List<>))
                     {
                         Json.Append('[');
 
-                        var array = obj as Array;
+                        var list = obj as IList;
 
-                        for (int i = 0; i < array.Length; i++)
+                        for (int i = 0; i < list.Count; i++)
                         {
                             if (i > 0)
                             {
                                 Json.Append(',');
                             }
 
-                            AppendValue(array.GetValue(i));
+                            AppendValue(list[i]);
                         }
 
                         Json.Append(']');
                     }
-                    else if (type.IsGenericType)
+                    else if (typeDefinition == typeof(Dictionary<,>))
                     {
-                        var typeDefinition = type.GetGenericTypeDefinition();
+                        var keyType = type.GetGenericArguments().First();
 
-                        if (typeDefinition == typeof(List<>))
+                        if (keyType == typeof(string))
                         {
-                            Json.Append('[');
+                            Json.Append('{');
 
-                            var list = obj as IList;
+                            var dict = obj as IDictionary;
 
-                            for (int i = 0; i < list.Count; i++)
+                            var isFirst = true;
+
+                            foreach (DictionaryEntry item in dict)
                             {
-                                if (i > 0)
+                                if (isFirst)
+                                {
+                                    isFirst = false;
+                                }
+                                else
                                 {
                                     Json.Append(',');
                                 }
 
-                                AppendValue(list[i]);
+                                Json.Append('"');
+                                Json.Append((string)item.Key);
+                                Json.Append("\":");
+
+                                AppendValue(item.Value);
                             }
 
-                            Json.Append(']');
+                            Json.Append('}');
                         }
-                        else if (typeDefinition == typeof(Dictionary<,>))
+                        else
                         {
-                            var keyType = type.GetGenericArguments().First();
-
-                            if (keyType == typeof(string))
-                            {
-                                Json.Append('{');
-
-                                var dict = obj as IDictionary;
-
-                                var isFirst = true;
-
-                                foreach (DictionaryEntry item in dict)
-                                {
-                                    if (isFirst)
-                                    {
-                                        isFirst = false;
-                                    }
-                                    else
-                                    {
-                                        Json.Append(',');
-                                    }
-
-                                    Json.Append('"');
-                                    Json.Append((string)item.Key);
-                                    Json.Append("\":");
-
-                                    AppendValue(item.Value);
-                                }
-
-                                Json.Append('}');
-                            }
-                            else
-                            {
-                                Json.Append("\"Key must be a string\"");
-                            }
+                            Json.Append("\"Key must be a string\"");
                         }
                     }
-                    else if (type == typeof(DateTime))
-                    {
-                        Json.Append('"');
+                }
+                else if (type == typeof(DateTime))
+                {
+                    Json.Append('"');
 
-                        var datetime = (DateTime)obj;
-                        var text = datetime.ToString("yyyy-MM-ddTHH:mm:ss");
+                    var datetime = (DateTime)obj;
+                    var text = datetime.ToString(DateTimeFormat);
 
-                        Json.Append(text);
+                    Json.Append(text);
 
-                        Json.Append('"');
-                    }
-                    else
-                    {
-                        Json.Append('{');
+                    Json.Append('"');
+                }
+                else if (type == typeof(Guid))
+                {
+                    Json.Append('"');
 
-                        FieldInfo[] fieldInfos = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+                    var guid = (Guid)obj;
 
-                        for (int i = 0; i < fieldInfos.Length; i++)
-                        {
-                            if (fieldInfos[i].IsDefined(typeof(IgnoreDataMemberAttribute), true) == false)
-                            {
-                                object value = fieldInfos[i].GetValue(obj);
+                    Json.Append(guid.ToString());
 
-                                if (value != null)
-                                {
-                                    if (i > 0)
-                                    {
-                                        Json.Append(',');
-                                    }
-
-                                    Json.Append('"');
-                                    Json.Append(GetMemberName(fieldInfos[i]));
-                                    Json.Append("\":");
-
-                                    AppendValue(value);
-                                }
-                            }
-                        }
-
-                        PropertyInfo[] propertyInfo = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-
-                        for (int i = 0; i < propertyInfo.Length; i++)
-                        {
-                            if (propertyInfo[i].CanRead || propertyInfo[i].IsDefined(typeof(IgnoreDataMemberAttribute), true) == false)
-                            {
-                                object value = propertyInfo[i].GetValue(obj, null);
-
-                                if (value != null)
-                                {
-                                    if (i > 0)
-                                    {
-                                        Json.Append(',');
-                                    }
-
-                                    Json.Append('"');
-                                    Json.Append(GetMemberName(propertyInfo[i]));
-                                    Json.Append("\":");
-
-                                    AppendValue(value);
-                                }
-                            }
-                        }
-
-                        Json.Append('}');
-                    }
+                    Json.Append('"');
                 }
                 else
                 {
-                    Json.Append("null");
+                    Json.Append('{');
+
+                    var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+
+                    var fieldInfos = type.GetFields(flags);
+                    var propertyInfos = type.GetProperties(flags);
+
+                    for (int i = 0; i < fieldInfos.Length; i++)
+                    {
+                        var key = fieldInfos[i].GetMemberName();
+
+                        if (!string.IsNullOrWhiteSpace(key))
+                        {
+                            var value = fieldInfos[i].GetValue(obj);
+
+                            if (i > 0)
+                            {
+                                Json.Append(',');
+                            }
+
+                            Json.Append('"');
+                            Json.Append(key);
+                            Json.Append("\":");
+
+                            AppendValue(value);
+                        }
+                    }
+
+                    for (int i = 0; i < propertyInfos.Length; i++)
+                    {
+                        var key = propertyInfos[i].GetMemberName();
+
+                        if (!string.IsNullOrWhiteSpace(key))
+                        {
+                            var value = propertyInfos[i].GetValue(obj, null);
+
+                            if (i > 0)
+                            {
+                                Json.Append(',');
+                            }
+
+                            Json.Append('"');
+                            Json.Append(key);
+                            Json.Append("\":");
+
+                            AppendValue(value);
+                        }
+                    }
+
+                    Json.Append('}');
                 }
             }
-
-            private string GetMemberName(MemberInfo member)
+            else
             {
-                if (member.IsDefined(typeof(DataMemberAttribute), true))
-                {
-                    var dataMemberAttribute = (DataMemberAttribute)Attribute.GetCustomAttribute(member, typeof(DataMemberAttribute), true);
-
-                    if (string.IsNullOrEmpty(dataMemberAttribute.Name) == false)
-                    {
-                        return dataMemberAttribute.Name;
-                    }
-                }
-
-                return member.Name;
+                Json.Append("null");
             }
         }
+    }
 
-        public class JsonReader<T>
+    public class JsonReader<T>
+    {
+        public T Value { get; private set; }
+
+        public JsonReader(string json)
         {
-            public T Value { get; private set; }
+            var newJson = new StringBuilder();
 
-            public const string DateTimePattern = @"^(?<Year>\d{4})-(?<Month>\d{2})-(?<Day>\d{2})T(?<Hour>\d{2}):(?<Minute>\d{2}):(?<Second>\d{2})$";
-
-            public JsonReader(string json)
+            for (int i = 0; i < json.Length; i++)
             {
-                var newJson = new StringBuilder();
+                var symbol = json[i];
 
-                for (int i = 0; i < json.Length; i++)
+                if (symbol == '"')
                 {
-                    var symbol = json[i];
-
-                    if (symbol == '"')
-                    {
-                        i = AppendUntilStringEnd(true, i, json, newJson);
-                    }
-                    else if (!char.IsWhiteSpace(symbol))
-                    {
-                        newJson.Append(symbol);
-                    }
+                    i = i.AppendUntilStringEnd(json, newJson);
                 }
-
-                var content = newJson.ToString();
-
-                Value = (T)ParseValue(typeof(T), content);
-            }
-
-            public T GetValue()
-            {
-                return Value;
-            }
-
-            private object ParseValue(Type type, string json)
-            {
-                if (json.Length > 0)
+                else if (!char.IsWhiteSpace(symbol))
                 {
-                    if (type == typeof(string) || type == typeof(char))
+                    newJson.Append(symbol);
+                }
+            }
+
+            Value = (T)ParseValue(typeof(T), newJson.ToString());
+        }
+
+        private object ParseValue(Type type, string json)
+        {
+            if (json.Length > 0)
+            {
+                if (type == typeof(string) || type == typeof(char))
+                {
+                    if (json.Length > 2)
                     {
-                        if (json.Length > 2)
+                        if (type == typeof(char))
                         {
-                            if (type == typeof(char))
-                            {
-                                return json[1];
-                            }
-                            else if (type == typeof(string))
-                            {
-                                var text = new StringBuilder();
+                            return json[1];
+                        }
+                        else if (type == typeof(string))
+                        {
+                            var text = new StringBuilder();
 
-                                for (int i = 1; i < json.Length - 1; ++i)
+                            for (int i = 1; i < json.Length - 1; ++i)
+                            {
+                                if (json[i] == '\\' && i + 1 < json.Length - 1)
                                 {
-                                    if (json[i] == '\\' && i + 1 < json.Length - 1)
+                                    var j = "\"\\nrtbf/".IndexOf(json[i + 1]);
+
+                                    if (j >= 0)
                                     {
-                                        var j = "\"\\nrtbf/".IndexOf(json[i + 1]);
+                                        text.Append("\"\\\n\r\t\b\f/"[j]);
+                                        ++i;
+                                    }
+                                    else if (json[i + 1] == 'u' && i + 5 < json.Length - 1)
+                                    {
+                                        var isUInt = uint.TryParse(json.Substring(i + 2, 4), NumberStyles.AllowHexSpecifier, null, out uint c);
 
-                                        if (j >= 0)
+                                        if (isUInt)
                                         {
-                                            text.Append("\"\\\n\r\t\b\f/"[j]);
-                                            ++i;
-                                        }
-                                        else if (json[i + 1] == 'u' && i + 5 < json.Length - 1)
-                                        {
-                                            var isUInt = uint.TryParse(json.Substring(i + 2, 4), NumberStyles.AllowHexSpecifier, null, out uint c);
+                                            text.Append((char)c);
 
-                                            if (isUInt)
-                                            {
-                                                text.Append((char)c);
-
-                                                i += 5;
-                                            }
+                                            i += 5;
                                         }
                                     }
-
-                                    text.Append(json[i]);
                                 }
 
-                                return text.ToString();
+                                text.Append(json[i]);
                             }
-                        }
-                        else
-                        {
-                            return string.Empty;
-                        }
-                    }
-                    else if (type.IsPrimitive)
-                    {
-                        return Convert.ChangeType(json, type, CultureInfo.InvariantCulture);
-                    }
-                    else if (type == typeof(decimal))
-                    {
-                        decimal.TryParse(json, NumberStyles.Float, CultureInfo.InvariantCulture, out decimal number);
 
-                        return number;
+                            return text.ToString();
+                        }
                     }
-                    else if (type.IsEnum)
+                    else
                     {
-                        return ParseValue(typeof(int), json);
+                        return string.Empty;
                     }
-                    else if (type.IsArray)
+                }
+                else if (type.IsPrimitive)
+                {
+                    return Convert.ChangeType(json, type, CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(decimal))
+                {
+                    decimal.TryParse(json, NumberStyles.Float, CultureInfo.InvariantCulture, out decimal number);
+
+                    return number;
+                }
+                else if (type.IsEnum)
+                {
+                    return ParseValue(typeof(int), json);
+                }
+                else if (type.IsArray)
+                {
+                    if (json.First() == '[' && json.Last() == ']')
+                    {
+                        var elems = json.SplitToElements();
+                        var arrayType = type.GetElementType();
+                        var array = Array.CreateInstance(arrayType, elems.Length);
+
+                        for (int i = 0; i < elems.Length; i++)
+                        {
+                            array.SetValue(ParseValue(arrayType, elems[i]), i);
+                        }
+
+                        return array;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else if (type == typeof(DateTime))
+                {
+                    if (DateTime.TryParse(json.RemoveQuotes(), out DateTime date)) return date;
+                    else return new DateTime();
+                }
+                else if (type == typeof(Guid))
+                {
+                    var isTryParsed = Guid.TryParse(json.RemoveQuotes(), out Guid guid);
+
+                    return isTryParsed ? guid : new Guid();
+                }
+                else if (type.IsGenericType)
+                {
+                    if (type.GetGenericTypeDefinition() == typeof(List<>))
                     {
                         if (json.First() == '[' && json.Last() == ']')
                         {
-                            var elems = Split(json);
-                            var arrayType = type.GetElementType();
-                            var newArray = Array.CreateInstance(arrayType, elems.Count);
+                            var elems = json.SplitToElements();
+                            var listType = type.GetGenericArguments().First();
 
-                            for (int i = 0; i < elems.Count; i++)
+                            var list = (IList)type
+                                .GetConstructor(new Type[] { typeof(int) })
+                                .Invoke(new object[] { elems.Length });
+
+                            for (int i = 0; i < elems.Length; i++)
                             {
-                                newArray.SetValue(ParseValue(arrayType, elems[i]), i);
+                                list.Add(ParseValue(listType, elems[i]));
                             }
 
-                            return newArray;
-                        }
-                        else
-                        {
-                            return null;
+                            return list;
                         }
                     }
-                    else if (type == typeof(DateTime))
+                    else if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
                     {
-                        var regex = new Regex(DateTimePattern);
-                        var input = json.Substring(1, json.Length - 2);
-
-                        if (regex.IsMatch(input))
+                        Type keyType, valueType;
                         {
-                            var elems = new List<string>() { "\"Year\"", "\"Month\"", "\"Day\"", "\"Hour\"", "\"Minute\"", "\"Second\"" };
-
-                            var match = regex.Match(input);
-                            var groups = match.Groups;
-
-                            for (int i = 0; i < groups.Count - 1; i++)
-                            {
-                                var index = i + i;
-                                var key = elems[index].Substring(1, elems[index].Length - 2);
-                                var value = groups[key].Value;
-
-                                elems.Insert(index + 1, value);
-                            }
-
-                            var date = (Date)ParseObject(typeof(Date), elems.ToArray());
-
-                            return date.GetDateTime();
+                            Type[] args = type.GetGenericArguments();
+                            keyType = args[0];
+                            valueType = args[1];
                         }
-                        else
-                        {
-                            return new DateTime();
-                        }
-                    }
-                    else if (type.IsGenericType)
-                    {
-                        if (type.GetGenericTypeDefinition() == typeof(List<>))
-                        {
-                            if (json.First() == '[' && json.Last() == ']')
-                            {
-                                var elems = Split(json);
-                                var listType = type.GetGenericArguments().First();
-                                var list = (IList)type.GetConstructor(new Type[] { typeof(int) }).Invoke(new object[] { elems.Count });
 
-                                for (int i = 0; i < elems.Count; i++)
+                        if (keyType == typeof(string))
+                        {
+                            if (json.First() == '{' && json.Last() == '}')
+                            {
+                                var elems = json.SplitToElements();
+
+                                if (elems.Length % 2 == 0)
                                 {
-                                    list.Add(ParseValue(listType, elems[i]));
-                                }
+                                    var dictionary = (IDictionary)type.GetConstructor(new Type[] { typeof(int) }).Invoke(new object[] { elems.Length / 2 });
 
-                                return list;
-                            }
-                        }
-                        else if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
-                        {
-                            Type keyType, valueType;
-                            {
-                                Type[] args = type.GetGenericArguments();
-                                keyType = args[0];
-                                valueType = args[1];
-                            }
-
-                            if (keyType == typeof(string))
-                            {
-                                if (json.First() == '{' && json.Last() == '}')
-                                {
-                                    var elems = Split(json);
-
-                                    if (elems.Count % 2 == 0)
+                                    for (int i = 0; i < elems.Length; i += 2)
                                     {
-                                        var dictionary = (IDictionary)type.GetConstructor(new Type[] { typeof(int) }).Invoke(new object[] { elems.Count / 2 });
-
-                                        for (int i = 0; i < elems.Count; i += 2)
+                                        if (elems[i].Length > 2)
                                         {
-                                            if (elems[i].Length > 2)
-                                            {
-                                                var keyValue = elems[i].Substring(1, elems[i].Length - 2);
+                                            var key = elems[i].RemoveQuotes();
+                                            var value = ParseValue(valueType, elems[i + 1]);
 
-                                                var val = ParseValue(valueType, elems[i + 1]);
-
-                                                dictionary[keyValue] = val;
-                                            }
+                                            dictionary[key] = value;
                                         }
-
-                                        return dictionary;
                                     }
+
+                                    return dictionary;
                                 }
                             }
                         }
+                    }
 
-                        return null;
-                    }
-                    else if (json.First() == '{' && json.Last() == '}')
-                    {
-                        var elems = Split(json);
-
-                        if (elems.Count % 2 == 0)
-                        {
-                            return ParseObject(type, elems.ToArray());
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
-                    else if (json == "null")
-                    {
-                        return null;
-                    }
+                    return null;
                 }
-
-                return null;
+                else if (json.First() == '{' && json.Last() == '}')
+                {
+                    return ParseObject(type, json.SplitToElements());
+                }
             }
 
-            private object ParseObject(Type type, string[] elems)
+            return null;
+        }
+
+        private object ParseObject(Type type, string[] elems)
+        {
+            if (elems.Length % 2 == 0)
             {
                 var instance = FormatterServices.GetUninitializedObject(type);
 
-                if (elems.Length % 2 == 0)
+                var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+
+                var nameToField = type.GetFields(flags).GetMembersName();
+                var nameToProperty = type.GetProperties(flags).GetMembersName();
+
+                for (int i = 0; i < elems.Length; i += 2)
                 {
-                    var nameToField = GetMembersName(type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy));
-                    var nameToProperty = GetMembersName(type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy));
-
-                    for (int i = 0; i < elems.Length; i += 2)
+                    if (elems[i].Length > 2)
                     {
-                        if (elems[i].Length > 2)
-                        {
-                            var key = elems[i].Substring(1, elems[i].Length - 2);
-                            var value = elems[i + 1];
+                        var key = elems[i].RemoveQuotes();
+                        var value = elems[i + 1];
 
-                            if (nameToField.TryGetValue(key, out FieldInfo fieldInfo))
-                            {
-                                fieldInfo.SetValue(instance, ParseValue(fieldInfo.FieldType, value));
-                            }
-                            else if (nameToProperty.TryGetValue(key, out PropertyInfo propertyInfo))
-                            {
-                                propertyInfo.SetValue(instance, ParseValue(propertyInfo.PropertyType, value), null);
-                            }
+                        if (nameToField.TryGetValue(key, out FieldInfo fieldInfo))
+                        {
+                            fieldInfo.SetValue(instance, ParseValue(fieldInfo.FieldType, value));
+                        }
+                        else if (nameToProperty.TryGetValue(key, out PropertyInfo propertyInfo) && propertyInfo.CanWrite)
+                        {
+                            propertyInfo.SetValue(instance, ParseValue(propertyInfo.PropertyType, value), null);
                         }
                     }
                 }
 
                 return instance;
             }
+            else return null;
+        }
+    }
 
-            private Dictionary<string, Member> GetMembersName<Member>(Member[] members) where Member : MemberInfo
+    public static class JsonExtensions
+    {
+        public static string RemoveQuotes(this string value) => value.Substring(1, value.Length - 2);
+
+        public static int AppendUntilStringEnd(this int start, string json, StringBuilder builder, bool appendEscapeCharacter = true)
+        {
+            builder.Append(json[start]);
+
+            for (int i = start + 1; i < json.Length; i++)
             {
-                var nameToMember = new Dictionary<string, Member>(StringComparer.OrdinalIgnoreCase);
-
-                for (int i = 0; i < members.Length; i++)
+                if (json[i] == '\\')
                 {
-                    var member = members[i];
-
-                    if (!member.IsDefined(typeof(IgnoreDataMemberAttribute), true))
+                    if (appendEscapeCharacter)
                     {
-                        var name = member.Name;
-
-                        if (member.IsDefined(typeof(DataMemberAttribute), true))
-                        {
-                            var dataMemberAttribute = (DataMemberAttribute)Attribute.GetCustomAttribute(member, typeof(DataMemberAttribute), true);
-
-                            if (!string.IsNullOrEmpty(dataMemberAttribute.Name))
-                            {
-                                name = dataMemberAttribute.Name;
-                            }
-                        }
-
-                        nameToMember.Add(name, member);
+                        builder.Append(json[i]);
                     }
-                }
 
-                return nameToMember;
+                    builder.Append(json[i + 1]);
+
+                    i++;
+                }
+                else if (json[i] == '"')
+                {
+                    builder.Append(json[i]);
+
+                    return i;
+                }
+                else
+                {
+                    builder.Append(json[i]);
+                }
             }
 
-            private List<string> Split(string json)
+            return json.Length - 1;
+        }
+
+        public static string[] SplitToElements(this string value)
+        {
+            if (value.Length > 2)
             {
                 var result = new List<string>();
-                var stringBuilder = new StringBuilder();
+                var builder = new StringBuilder();
 
-                if (json.Length > 2)
+                var parseDepth = 0;
+
+                for (int i = 1; i < value.Length - 1; i++)
                 {
-                    var parseDepth = 0;
+                    var symbol = value[i];
 
-                    for (int i = 1; i < json.Length - 1; i++)
+                    if (symbol == '[' || symbol == '{')
                     {
-                        var symbol = json[i];
+                        parseDepth++;
 
-                        if (symbol == '[' || symbol == '{')
-                        {
-                            parseDepth++;
+                        builder.Append(symbol);
+                    }
+                    else if (symbol == ']' || symbol == '}')
+                    {
+                        parseDepth--;
 
-                            stringBuilder.Append(symbol);
-                        }
-                        else if (symbol == ']' || symbol == '}')
+                        builder.Append(symbol);
+                    }
+                    else if (symbol == '"')
+                    {
+                        i = i.AppendUntilStringEnd(value, builder);
+                    }
+                    else if (symbol == ',' || symbol == ':')
+                    {
+                        if (parseDepth == 0)
                         {
-                            parseDepth--;
+                            result.Add(builder.ToString());
 
-                            stringBuilder.Append(symbol);
-                        }
-                        else if (symbol == '"')
-                        {
-                            i = AppendUntilStringEnd(true, i, json, stringBuilder);
-                        }
-                        else if (symbol == ',' || symbol == ':')
-                        {
-                            if (parseDepth == 0)
-                            {
-                                result.Add(stringBuilder.ToString());
-
-                                stringBuilder.Clear();
-                            }
-                            else
-                            {
-                                stringBuilder.Append(symbol);
-                            }
+                            builder.Clear();
                         }
                         else
                         {
-                            stringBuilder.Append(symbol);
+                            builder.Append(symbol);
                         }
-                    }
-
-                    result.Add(stringBuilder.ToString());
-                }
-
-                return result;
-            }
-
-            private int AppendUntilStringEnd(bool appendEscapeCharacter, int startIdx, string json, StringBuilder stringBuilder)
-            {
-                stringBuilder.Append(json[startIdx]);
-
-                for (int i = startIdx + 1; i < json.Length; i++)
-                {
-                    if (json[i] == '\\')
-                    {
-                        if (appendEscapeCharacter)
-                        {
-                            stringBuilder.Append(json[i]);
-                        }
-
-                        stringBuilder.Append(json[i + 1]);
-
-                        i++;
-                    }
-                    else if (json[i] == '"')
-                    {
-                        stringBuilder.Append(json[i]);
-
-                        return i;
                     }
                     else
                     {
-                        stringBuilder.Append(json[i]);
+                        builder.Append(symbol);
                     }
                 }
 
-                return json.Length - 1;
+                result.Add(builder.ToString());
+
+                return result.ToArray();
             }
+            else return new string[0];
+        }
 
-            public class Date
+        public static string GetMemberName<Member>(this Member member) where Member : MemberInfo
+        {
+            if (!member.IsDefined(typeof(JsonIgnoreAttribute), true))
             {
-                public int Year { get; set; }
+                return member.Name;
+            }
+            else return string.Empty;
+        }
 
-                public int Month { get; set; }
+        public static Dictionary<string, Member> GetMembersName<Member>(this Member[] members) where Member : MemberInfo
+        {
+            var nameToMember = new Dictionary<string, Member>(StringComparer.OrdinalIgnoreCase);
 
-                public int Day { get; set; }
+            foreach (var member in members)
+            {
+                var name = member.GetMemberName();
 
-                public int Hour { get; set; }
-
-                public int Minute { get; set; }
-
-                public int Second { get; set; }
-
-                public DateTime GetDateTime()
+                if (!string.IsNullOrWhiteSpace(name))
                 {
-                    return new DateTime(Year, Month, Day, Hour, Minute, Second);
+                    nameToMember.Add(member.Name, member);
                 }
             }
+
+            return nameToMember;
         }
     }
+
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class JsonIgnoreAttribute : Attribute { }
 }

@@ -1,21 +1,21 @@
 ﻿using AutoClicker.Data;
+using AutoClicker.Utils;
 using AutoClickerMouse = AutoClicker.Data.Mouse;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace AutoClicker.Worker
 {
     public class ClickerWorker : AbstractWorker
     {
         private Click selectClick;
-
         private ClickData data;
 
         public ClickerWorker(ClickData data, int intervalIncrement) : base(intervalIncrement)
         {
             WorkerType = WorkerType.Clicker;
 
-            selectClick = data.GetClickAndRemoveHim();
+            selectClick = data.Clicks.Pop();
             this.data = data;
         }
 
@@ -32,7 +32,7 @@ namespace AutoClicker.Worker
                         Cursor.Position = position;
                         AutoClickerMouse.Click(selectClick.MouseType, position);
 
-                        selectClick = data.GetClickAndRemoveHim();
+                        selectClick = data.Clicks.Pop();
                     }
 
                     base.Work();

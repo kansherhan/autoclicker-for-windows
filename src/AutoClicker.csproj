@@ -55,8 +55,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -67,8 +65,8 @@
   <ItemGroup>
     <Compile Include="Data\ClickData.cs" />
     <Compile Include="Data\Mouse.cs" />
-    <Compile Include="Data\MousePosition.cs" />
-    <Compile Include="Data\MouseState.cs" />
+    <Compile Include="Data\MouseEventArgs.cs" />
+    <Compile Include="Data\Position.cs" />
     <Compile Include="Data\MouseType.cs" />
     <Compile Include="Data\Click.cs" />
     <Compile Include="MainForm.cs">
@@ -85,10 +83,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\JsonConvert.cs" />
-    <Compile Include="Worker\WorkerType.cs" />
+    <Compile Include="Data\WorkerType.cs" />
     <Compile Include="Worker\RecorderWorker.cs" />
-    <Compile Include="Worker\Worker.cs" />
+    <Compile Include="Worker\AbstractWorker.cs" />
     <Compile Include="Worker\ClickerWorker.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

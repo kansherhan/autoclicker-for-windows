@@ -49,7 +49,7 @@
             this.RecordListBox.FormattingEnabled = true;
             this.RecordListBox.Location = new System.Drawing.Point(146, 10);
             this.RecordListBox.Name = "RecordListBox";
-            this.RecordListBox.Size = new System.Drawing.Size(453, 264);
+            this.RecordListBox.Size = new System.Drawing.Size(455, 277);
             this.RecordListBox.TabIndex = 11;
             // 
             // StartButton

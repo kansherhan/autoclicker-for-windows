@@ -1,13 +1,14 @@
 ﻿using AutoClicker.Utils;
-using System.Collections.Generic;
-using System.Drawing;
+using System;
 using System.IO;
-using System.Linq;
+using System.Drawing;
+using System.Collections.Generic;
 
 namespace AutoClicker.Data
 {
     public class ClickData
     {
+        public const string DateTimeFormat = "yyyy_MM_d_hh_mm_ss";
         public const string SaveFolderPath = "Data";
 
         public List<Click> Clicks { get; set; }
@@ -27,26 +28,20 @@ namespace AutoClicker.Data
             Clicks.Add(new Click(interval, mouse, cursorPosition));
         }
 
-        public Click GetClickAndRemoveHim()
-        {
-            var click = Clicks.First();
-
-            Clicks.RemoveAt(0);
-
-            return click;
-        }
-
         public void Save()
         {
-            var today = System.DateTime.Now.ToString("yyyy_MM_d_hh_mm_ss");
-
-            var path = $"{SaveFolderPath}/AutoClicker_{today}.json";
-
-            var json = JsonConvert.ToJson(this);
-
-            using (var writer = new StreamWriter(path, false))
+            if (Clicks.Count > 0)
             {
-                writer.WriteLine(json);
+                var today = DateTime.Now.ToString(DateTimeFormat);
+
+                var path = $"{SaveFolderPath}/AutoClicker_{today}.json";
+
+                var json = JsonConvert.ToJson(this);
+
+                using (var writer = new StreamWriter(path, false))
+                {
+                    writer.WriteLine(json);
+                }
             }
         }
 

@@ -2,17 +2,17 @@
 {
     public class MouseData
     {
-        public MouseType MouseType { get; private set; }
+        public MouseType MouseType { get; }
 
-        public int DownCode { get; private set; }
-        public int UpCode { get; private set; }
+        public int DownFlag { get; }
+        public int UpFlags { get; }
 
-        public MouseData(MouseType eMouse, int downCode, int upCode)
+        public MouseData(MouseType type, int down, int up)
         {
-            MouseType = eMouse;
+            MouseType = type;
 
-            DownCode = downCode;
-            UpCode = upCode;
+            DownFlag = down;
+            UpFlags = up;
         }
     }
 }

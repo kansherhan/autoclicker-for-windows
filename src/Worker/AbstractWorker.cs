@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoClicker.Data;
+using System;
 
 namespace AutoClicker.Worker
 {
@@ -20,7 +21,7 @@ namespace AutoClicker.Worker
         }
 
         public int Interval { get; private set; }
-        public int IntervalIncrement { get; private set; }
+        public int IntervalIncrement { get; }
 
         public WorkerType WorkerType { get; protected set; }
 

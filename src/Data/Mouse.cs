@@ -26,14 +26,12 @@ namespace AutoClicker.Data
         private static extern void mouse_event(int dsFlags, int dx, int dy, int cButtons, int dsExtraInfo);
 
         public MouseType MouseType { get; private set; }
-        public MouseState MouseState { get; private set; }
 
         public event EventHandler<MouseEventArgs> MouseChanged;
 
         public Mouse()
         {
             MouseType = MouseType.None;
-            MouseState = MouseState.None;
         }
 
         public void UpdateData()
@@ -44,7 +42,7 @@ namespace AutoClicker.Data
             {
                 MouseType = type;
 
-                var args = new MouseEventArgs(MouseType, MouseState);
+                var args = new MouseEventArgs(MouseType);
 
                 MouseChanged?.Invoke(this, args);
             }
@@ -68,41 +66,9 @@ namespace AutoClicker.Data
             {
                 var mouse = mouses[type];
 
-                mouse_event(mouse.DownCode, position.X, position.Y, 0, 0);
-                mouse_event(mouse.UpCode, position.X, position.Y, 0, 0);
+                mouse_event(mouse.DownFlag, position.X, position.Y, 0, 0);
+                mouse_event(mouse.UpFlags, position.X, position.Y, 0, 0);
             }
-        }
-
-        public static void MouseDown(MouseType type, Point position)
-        {
-            if (type != MouseType.None)
-            {
-                var mouse = mouses[type];
-
-                mouse_event(mouse.DownCode, position.X, position.Y, 0, 0);
-            }
-        }
-
-        public static void MouseUp(MouseType type, Point position)
-        {
-            if (type != MouseType.None)
-            {
-                var mouse = mouses[type];
-
-                mouse_event(mouse.UpCode, position.X, position.Y, 0, 0);
-            }
-        }
-    }
-
-    public class MouseEventArgs : EventArgs
-    {
-        public MouseState MouseState { get; }
-        public MouseType MouseType { get; }
-
-        public MouseEventArgs(MouseType type, MouseState state)
-        {
-            MouseType = type;
-            MouseState = state;
         }
     }
 }

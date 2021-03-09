@@ -6,7 +6,7 @@ namespace AutoClicker.Data
     {
         public int Milisecond { get; set; }
 
-        public MousePosition CursorPosition { get; set; }
+        public Position CursorPosition { get; set; }
 
         public MouseType MouseType { get; set; }
 
