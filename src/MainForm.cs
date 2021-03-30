@@ -1,154 +1,41 @@
-﻿using AutoClicker.Data;
-using AutoClicker.Worker;
-using System;
-using System.IO;
+﻿using AutoClicker.Forms;
+using AutoClicker.UserControls;
+using AutoClicker.Utils;
 using System.Windows.Forms;
 
 namespace AutoClicker
 {
-    public partial class MainForm : Form
+    public partial class MainForm : FormBase
     {
-        private bool isRecording;
-
-        private AbstractWorker worker;
-        private AbstractWorker Worker
-        {
-            get => worker;
-            set
-            {
-                value.Finished += Worker_Finished;
-                worker = value;
-            }
-        }
-
-        private int RecordItemIndex => RecordListBox.SelectedIndex;
-
         public MainForm()
         {
             InitializeComponent();
 
-            isRecording = false;
+            IOFile.CreateSaveFolders();
 
-            UpdateRecordList();
+            CreateMenuItems();
         }
 
-        private void StartClickerButton_Click(object sender, EventArgs e)
+        private void CreateMenuItems()
         {
-            if (RecordItemIndex >= 0)
-            {
-                var path = RecordListBox.Items[RecordItemIndex].ToString();
+            var quete = new QueteUserControl(this);
+            var reusable = new ReusableUserControl(this);
 
-                if (File.Exists(path))
-                {
-                    var data = ClickData.Open(path);
+            ContainerPanel.Controls.Add(quete);
+            ContainerPanel.Controls.Add(reusable);
 
-                    Worker = new ClickerWorker(data, MainTimer.Interval);
-
-                    MainTimer.Start();
-
-                    StartButton.Enabled = false;
-                    RecordingButton.Enabled = false;
-                    DeleteRecordButton.Enabled = false;
-
-                    WindowState = FormWindowState.Minimized;
-                }
-                else
-                {
-                    MessageBox.Show("File not found.");
-                }
-            }
-            else
-            {
-                MessageBox.Show("Select item.");
-            }
+            MenuPanel.SelectIndexChanged += MenuPanel_SelectIndexChanged;
+            MenuPanel.AddButton(ContainerPanel.Controls.Count);
         }
 
-        private void RecordingButton_Click(object sender, EventArgs e)
+        private void MenuPanel_SelectIndexChanged(int index)
         {
-            if (Worker == null || Worker.WorkerType != WorkerType.Recorder || Worker.IsFinish == true)
+            foreach (Control control in ContainerPanel.Controls)
             {
-                RecordingButton.Text = "Stop";
-
-                Worker = new RecorderWorker(MainTimer.Interval);
-
-                MainTimer.Start();
-
-                isRecording = true;
-
-                StartButton.Enabled = false;
-                DeleteRecordButton.Enabled = false;
-
-                WindowState = FormWindowState.Minimized;
-            }
-            else
-            {
-                RecordingButton.Text = "Record";
-
-                Worker.Finish();
-
-                isRecording = false;
-
-                StartButton.Enabled = true;
-                DeleteRecordButton.Enabled = true;
+                control.Visible = false;
             }
 
-            UpdateRecordList();
-        }
-
-        private void DeleteButton_Click(object sender, EventArgs e)
-        {
-            if (RecordItemIndex >= 0)
-            {
-                var path = RecordListBox.Items[RecordItemIndex].ToString();
-
-                File.Delete(path);
-
-                UpdateRecordList();
-            }
-        }
-
-        private void MainTimer_Tick(object sender, EventArgs e)
-        {
-            if (Worker != null && !Worker.IsFinish)
-            {
-                Worker.Work();
-            }
-            else
-            {
-                MainTimer.Stop();
-            }
-        }
-
-        private void MainForm_Activated(object sender, EventArgs e)
-        {
-            if (isRecording && Worker.WorkerType == WorkerType.Recorder)
-            {
-                RecordingButton_Click(RecordingButton, new EventArgs());
-            }
-        }
-
-        private void Worker_Finished(object sender, EventArgs e)
-        {
-            MainTimer.Stop();
-
-            StartButton.Enabled = true;
-            RecordingButton.Enabled = true;
-            DeleteRecordButton.Enabled = true;
-
-            WindowState = FormWindowState.Normal;
-        }
-
-        private void UpdateRecordList()
-        {
-            RecordListBox.Items.Clear();
-
-            if (Directory.Exists(ClickData.SaveFolderPath))
-            {
-                var files = Directory.GetFiles(ClickData.SaveFolderPath);
-
-                RecordListBox.Items.AddRange(files);
-            }
-            else Directory.CreateDirectory(ClickData.SaveFolderPath);
+            ContainerPanel.Controls[index].Visible = true;
         }
     }
 }

@@ -5,14 +5,14 @@
         public MouseType MouseType { get; }
 
         public int DownFlag { get; }
-        public int UpFlags { get; }
+        public int UpFlag { get; }
 
         public MouseData(MouseType type, int down, int up)
         {
             MouseType = type;
 
             DownFlag = down;
-            UpFlags = up;
+            UpFlag = up;
         }
     }
 }

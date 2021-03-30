@@ -3,14 +3,14 @@
     partial class MainForm
     {
         /// <summary>
-        /// Обязательная переменная конструктора.
+        /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        /// Освободить все используемые ресурсы.
+        /// Clean up any resources being used.
         /// </summary>
-        /// <param name="disposing">истинно, если управляемый ресурс должен быть удален; иначе ложно.</param>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -20,96 +20,80 @@
             base.Dispose(disposing);
         }
 
-        #region Код, автоматически созданный конструктором форм Windows
+        #region Windows Form Designer generated code
 
         /// <summary>
-        /// Требуемый метод для поддержки конструктора — не изменяйте 
-        /// содержимое этого метода с помощью редактора кода.
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.MainTimer = new System.Windows.Forms.Timer(this.components);
-            this.RecordListBox = new System.Windows.Forms.ListBox();
-            this.StartButton = new System.Windows.Forms.Button();
-            this.DeleteRecordButton = new System.Windows.Forms.Button();
-            this.RecordingButton = new System.Windows.Forms.Button();
+            this.ContainerPanel = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.MenuPanel = new AutoClicker.Controls.MenuPanel();
+            this.HeaderPanel = new AutoClicker.Controls.HeaderPanel();
             this.SuspendLayout();
             // 
-            // MainTimer
+            // ContainerPanel
             // 
-            this.MainTimer.Tick += new System.EventHandler(this.MainTimer_Tick);
+            this.ContainerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ContainerPanel.Location = new System.Drawing.Point(60, 30);
+            this.ContainerPanel.Name = "ContainerPanel";
+            this.ContainerPanel.Size = new System.Drawing.Size(650, 400);
+            this.ContainerPanel.TabIndex = 3;
             // 
-            // RecordListBox
+            // button1
             // 
-            this.RecordListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.RecordListBox.FormattingEnabled = true;
-            this.RecordListBox.Location = new System.Drawing.Point(146, 10);
-            this.RecordListBox.Name = "RecordListBox";
-            this.RecordListBox.Size = new System.Drawing.Size(455, 277);
-            this.RecordListBox.TabIndex = 11;
+            this.button1.Location = new System.Drawing.Point(0, 0);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
             // 
-            // StartButton
+            // MenuPanel
             // 
-            this.StartButton.Location = new System.Drawing.Point(10, 10);
-            this.StartButton.Name = "StartButton";
-            this.StartButton.Size = new System.Drawing.Size(130, 30);
-            this.StartButton.TabIndex = 8;
-            this.StartButton.Tag = "1";
-            this.StartButton.Text = "Start";
-            this.StartButton.UseVisualStyleBackColor = true;
-            this.StartButton.Click += new System.EventHandler(this.StartClickerButton_Click);
+            this.MenuPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(42)))), ((int)(((byte)(47)))));
+            this.MenuPanel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.MenuPanel.Location = new System.Drawing.Point(0, 30);
+            this.MenuPanel.Name = "MenuPanel";
+            this.MenuPanel.Size = new System.Drawing.Size(60, 400);
+            this.MenuPanel.TabIndex = 0;
+            this.MenuPanel.Text = "menuControl1";
             // 
-            // DeleteRecordButton
+            // HeaderPanel
             // 
-            this.DeleteRecordButton.Location = new System.Drawing.Point(10, 82);
-            this.DeleteRecordButton.Name = "DeleteRecordButton";
-            this.DeleteRecordButton.Size = new System.Drawing.Size(130, 30);
-            this.DeleteRecordButton.TabIndex = 10;
-            this.DeleteRecordButton.Text = "Delete record";
-            this.DeleteRecordButton.UseVisualStyleBackColor = true;
-            this.DeleteRecordButton.Click += new System.EventHandler(this.DeleteButton_Click);
-            // 
-            // RecordingButton
-            // 
-            this.RecordingButton.Location = new System.Drawing.Point(10, 46);
-            this.RecordingButton.Name = "RecordingButton";
-            this.RecordingButton.Size = new System.Drawing.Size(130, 30);
-            this.RecordingButton.TabIndex = 9;
-            this.RecordingButton.Text = "Recording";
-            this.RecordingButton.UseVisualStyleBackColor = true;
-            this.RecordingButton.Click += new System.EventHandler(this.RecordingButton_Click);
+            this.HeaderPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(27)))), ((int)(((byte)(37)))), ((int)(((byte)(42)))));
+            this.HeaderPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.HeaderPanel.Location = new System.Drawing.Point(0, 0);
+            this.HeaderPanel.Name = "HeaderPanel";
+            this.HeaderPanel.Size = new System.Drawing.Size(710, 30);
+            this.HeaderPanel.TabIndex = 4;
+            this.HeaderPanel.Text = "AutoClicker";
             // 
             // MainForm
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(613, 302);
-            this.Controls.Add(this.RecordListBox);
-            this.Controls.Add(this.StartButton);
-            this.Controls.Add(this.DeleteRecordButton);
-            this.Controls.Add(this.RecordingButton);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.KeyPreview = true;
-            this.MinimumSize = new System.Drawing.Size(400, 300);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(55)))), ((int)(((byte)(63)))));
+            this.ClientSize = new System.Drawing.Size(710, 430);
+            this.ControlBox = false;
+            this.Controls.Add(this.ContainerPanel);
+            this.Controls.Add(this.MenuPanel);
+            this.Controls.Add(this.HeaderPanel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.MinimumSize = new System.Drawing.Size(710, 430);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "AutoClicker";
-            this.Activated += new System.EventHandler(this.MainForm_Activated);
+            this.Text = "MainForm";
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.Timer MainTimer;
-        private System.Windows.Forms.ListBox RecordListBox;
-        private System.Windows.Forms.Button StartButton;
-        private System.Windows.Forms.Button DeleteRecordButton;
-        private System.Windows.Forms.Button RecordingButton;
+        private System.Windows.Forms.Panel ContainerPanel;
+        private Controls.HeaderPanel HeaderPanel;
+        private System.Windows.Forms.Button button1;
+        private Controls.MenuPanel MenuPanel;
     }
 }
-

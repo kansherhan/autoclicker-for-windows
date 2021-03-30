@@ -34,7 +34,7 @@ namespace AutoClicker.Data
             MouseType = MouseType.None;
         }
 
-        public void UpdateData()
+        public void UpdateMouseState()
         {
             var type = KnowMouseDown();
 
@@ -48,10 +48,7 @@ namespace AutoClicker.Data
             }
         }
 
-        public static bool GetAsyncMouseState(MouseType type)
-        {
-            return GetAsyncKeyState(type) != 0;
-        }
+        public static bool GetAsyncMouseState(MouseType type) => GetAsyncKeyState(type) != 0;
 
         public static MouseType KnowMouseDown()
         {
@@ -60,14 +57,24 @@ namespace AutoClicker.Data
             else return MouseType.None;
         }
 
-        public static void Click(MouseType type, Point position)
+        public static void Click(MouseType type, Position position)
         {
             if (type != MouseType.None)
             {
                 var mouse = mouses[type];
 
                 mouse_event(mouse.DownFlag, position.X, position.Y, 0, 0);
-                mouse_event(mouse.UpFlags, position.X, position.Y, 0, 0);
+                mouse_event(mouse.UpFlag, position.X, position.Y, 0, 0);
+            }
+        }
+
+        public class MouseEventArgs : EventArgs
+        {
+            public MouseType MouseType { get; }
+
+            public MouseEventArgs(MouseType type)
+            {
+                MouseType = type;
             }
         }
     }

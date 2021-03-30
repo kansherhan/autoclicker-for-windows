@@ -1,4 +1,7 @@
-﻿using System;
+﻿using AutoClicker.Utils.Json.Serialization;
+using AutoClicker.Utils.Json.Utils;
+using AutoClicker.Utils.Json.Attributes;
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,26 +10,23 @@ using System.Reflection;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace AutoClicker.Utils
+namespace AutoClicker.Utils.Json
 {
     public class JsonConvert
     {
-        public static string ToJson(object obj)
-        {
-            return new JsonWriter(obj).Json.ToString();
-        }
+        public static string ToJson(object obj) => new JsonWriter(obj).ToString();
 
-        public static T FromJson<T>(string json)
-        {
-            return new JsonReader<T>(json).Value;
-        }
+        public static T FromJson<T>(string json) => new JsonReader<T>(json).Value;
     }
+}
 
+namespace AutoClicker.Utils.Json.Serialization
+{
     public class JsonWriter
     {
         public const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
 
-        public StringBuilder Json { get; private set; }
+        public StringBuilder Json { get; }
 
         public JsonWriter(object obj)
         {
@@ -72,49 +72,28 @@ namespace AutoClicker.Utils
 
                     Json.Append('"');
                 }
-                else if (type == typeof(byte) || type == typeof(sbyte))
+                else if (type == typeof(bool))
                 {
-                    Json.Append(obj.ToString());
+                    Json.Append(((bool)obj) ? "true" : "false");
                 }
-                else if (type == typeof(short) || type == typeof(ushort))
+                else if (type.IsPrimitive)
                 {
-                    Json.Append(obj.ToString());
-                }
-                else if (type == typeof(int) || type == typeof(uint))
-                {
-                    Json.Append(obj.ToString());
-                }
-                else if (type == typeof(long) || type == typeof(ulong))
-                {
-                    Json.Append(obj.ToString());
-                }
-                else if (type == typeof(float))
-                {
-                    var number = (float)obj;
-                    var text = number.ToString(CultureInfo.InvariantCulture);
-
-                    Json.Append(text);
-                }
-                else if (type == typeof(double))
-                {
-                    var number = (double)obj;
-                    var text = number.ToString(CultureInfo.InvariantCulture);
-
-                    Json.Append(text);
+                    if (type == typeof(float))
+                    {
+                        Json.Append(((float)obj).ToString(CultureInfo.InvariantCulture));
+                    }
+                    else if (type == typeof(double))
+                    {
+                        Json.Append(((double)obj).ToString(CultureInfo.InvariantCulture));
+                    }
+                    else
+                    {
+                        Json.Append(obj.ToString());
+                    }
                 }
                 else if (type == typeof(decimal))
                 {
-                    var number = (decimal)obj;
-                    var text = number.ToString(CultureInfo.InvariantCulture);
-
-                    Json.Append(text);
-                }
-                else if (type == typeof(bool))
-                {
-                    var value = (bool)obj;
-                    var text = value ? "true" : "false";
-
-                    Json.Append(text);
+                    Json.Append(((decimal)obj).ToString(CultureInfo.InvariantCulture));
                 }
                 else if (type.IsEnum)
                 {
@@ -130,10 +109,7 @@ namespace AutoClicker.Utils
 
                     for (int i = 0; i < array.Length; i++)
                     {
-                        if (i > 0)
-                        {
-                            Json.Append(',');
-                        }
+                        if (i > 0) Json.Append(',');
 
                         AppendValue(array.GetValue(i));
                     }
@@ -152,10 +128,7 @@ namespace AutoClicker.Utils
 
                         for (int i = 0; i < list.Count; i++)
                         {
-                            if (i > 0)
-                            {
-                                Json.Append(',');
-                            }
+                            if (i > 0) Json.Append(',');
 
                             AppendValue(list[i]);
                         }
@@ -204,87 +177,77 @@ namespace AutoClicker.Utils
                 {
                     Json.Append('"');
 
-                    var datetime = (DateTime)obj;
-                    var text = datetime.ToString(DateTimeFormat);
-
-                    Json.Append(text);
+                    Json.Append(((DateTime)obj).ToString(DateTimeFormat));
 
                     Json.Append('"');
                 }
-                else if (type == typeof(Guid))
-                {
-                    Json.Append('"');
-
-                    var guid = (Guid)obj;
-
-                    Json.Append(guid.ToString());
-
-                    Json.Append('"');
-                }
-                else
-                {
-                    Json.Append('{');
-
-                    var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
-
-                    var fieldInfos = type.GetFields(flags);
-                    var propertyInfos = type.GetProperties(flags);
-
-                    for (int i = 0; i < fieldInfos.Length; i++)
-                    {
-                        var key = fieldInfos[i].GetMemberName();
-
-                        if (!string.IsNullOrWhiteSpace(key))
-                        {
-                            var value = fieldInfos[i].GetValue(obj);
-
-                            if (i > 0)
-                            {
-                                Json.Append(',');
-                            }
-
-                            Json.Append('"');
-                            Json.Append(key);
-                            Json.Append("\":");
-
-                            AppendValue(value);
-                        }
-                    }
-
-                    for (int i = 0; i < propertyInfos.Length; i++)
-                    {
-                        var key = propertyInfos[i].GetMemberName();
-
-                        if (!string.IsNullOrWhiteSpace(key))
-                        {
-                            var value = propertyInfos[i].GetValue(obj, null);
-
-                            if (i > 0)
-                            {
-                                Json.Append(',');
-                            }
-
-                            Json.Append('"');
-                            Json.Append(key);
-                            Json.Append("\":");
-
-                            AppendValue(value);
-                        }
-                    }
-
-                    Json.Append('}');
-                }
+                else AppendObject(obj);
             }
-            else
-            {
-                Json.Append("null");
-            }
+            else Json.Append("null");
         }
+
+        private void AppendObject(object obj)
+        {
+            Json.Append('{');
+
+            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+
+            var type = obj.GetType();
+
+            var fieldInfos = type.GetFields(flags);
+            var propertyInfos = type.GetProperties(flags);
+
+            for (int i = 0; i < fieldInfos.Length; i++)
+            {
+                var field = fieldInfos[i];
+                var key = field.GetMemberName();
+
+                if (key.IsNotEmtry())
+                {
+                    var value = field.GetValue(obj);
+
+                    if (i > 0) Json.Append(',');
+
+                    Json.Append('"');
+                    Json.Append(key);
+                    Json.Append("\":");
+
+                    AppendValue(value);
+                }
+            }
+
+            for (int i = 0; i < propertyInfos.Length; i++)
+            {
+                var property = propertyInfos[i];
+
+                if (property.CanRead && property.GetIndexParameters().Length == 0)
+                {
+                    var key = property.GetMemberName();
+
+                    if (key.IsNotEmtry())
+                    {
+                        var value = property.GetValue(obj, null);
+
+                        if (i > 0) Json.Append(',');
+
+                        Json.Append('"');
+                        Json.Append(key);
+                        Json.Append("\":");
+
+                        AppendValue(value);
+                    }
+                }
+            }
+
+            Json.Append('}');
+        }
+
+        public override string ToString() => Json.ToString();
     }
 
     public class JsonReader<T>
     {
-        public T Value { get; private set; }
+        public T Value { get; }
 
         public JsonReader(string json)
         {
@@ -374,7 +337,7 @@ namespace AutoClicker.Utils
                 }
                 else if (type.IsArray)
                 {
-                    if (json.First() == '[' && json.Last() == ']')
+                    if (json.StartsAndEndsWith('[', ']'))
                     {
                         var elems = json.SplitToElements();
                         var arrayType = type.GetElementType();
@@ -387,34 +350,22 @@ namespace AutoClicker.Utils
 
                         return array;
                     }
-                    else
-                    {
-                        return null;
-                    }
                 }
                 else if (type == typeof(DateTime))
                 {
                     if (DateTime.TryParse(json.RemoveQuotes(), out DateTime date)) return date;
                     else return new DateTime();
                 }
-                else if (type == typeof(Guid))
-                {
-                    var isTryParsed = Guid.TryParse(json.RemoveQuotes(), out Guid guid);
-
-                    return isTryParsed ? guid : new Guid();
-                }
                 else if (type.IsGenericType)
                 {
                     if (type.GetGenericTypeDefinition() == typeof(List<>))
                     {
-                        if (json.First() == '[' && json.Last() == ']')
+                        if (json.StartsAndEndsWith('[', ']'))
                         {
                             var elems = json.SplitToElements();
                             var listType = type.GetGenericArguments().First();
 
-                            var list = (IList)type
-                                .GetConstructor(new Type[] { typeof(int) })
-                                .Invoke(new object[] { elems.Length });
+                            var list = (IList)type.GetConstructor(new Type[] { typeof(int) }).Invoke(new object[] { elems.Length });
 
                             for (int i = 0; i < elems.Length; i++)
                             {
@@ -435,7 +386,7 @@ namespace AutoClicker.Utils
 
                         if (keyType == typeof(string))
                         {
-                            if (json.First() == '{' && json.Last() == '}')
+                            if (json.StartsAndEndsWith('{', '}'))
                             {
                                 var elems = json.SplitToElements();
 
@@ -459,10 +410,8 @@ namespace AutoClicker.Utils
                             }
                         }
                     }
-
-                    return null;
                 }
-                else if (json.First() == '{' && json.Last() == '}')
+                else if (json.StartsAndEndsWith('{', '}'))
                 {
                     return ParseObject(type, json.SplitToElements());
                 }
@@ -505,12 +454,17 @@ namespace AutoClicker.Utils
             else return null;
         }
     }
+}
 
-    public static class JsonExtensions
+namespace AutoClicker.Utils.Json.Utils
+{
+    public static class Extensions
     {
-        public static string RemoveQuotes(this string value) => value.Substring(1, value.Length - 2);
+        public static string RemoveQuotes(this string text) => text.Substring(1, text.Length - 2);
 
-        public static int AppendUntilStringEnd(this int start, string json, StringBuilder builder, bool appendEscapeCharacter = true)
+        public static bool IsNotEmtry(this string text) => !string.IsNullOrWhiteSpace(text);
+
+        public static int AppendUntilStringEnd(this int start, string json, StringBuilder builder)
         {
             builder.Append(json[start]);
 
@@ -518,11 +472,7 @@ namespace AutoClicker.Utils
             {
                 if (json[i] == '\\')
                 {
-                    if (appendEscapeCharacter)
-                    {
-                        builder.Append(json[i]);
-                    }
-
+                    builder.Append(json[i]);
                     builder.Append(json[i + 1]);
 
                     i++;
@@ -542,18 +492,18 @@ namespace AutoClicker.Utils
             return json.Length - 1;
         }
 
-        public static string[] SplitToElements(this string value)
+        public static string[] SplitToElements(this string text)
         {
-            if (value.Length > 2)
+            if (text.Length > 2)
             {
                 var result = new List<string>();
                 var builder = new StringBuilder();
 
                 var parseDepth = 0;
 
-                for (int i = 1; i < value.Length - 1; i++)
+                for (int i = 1; i < text.Length - 1; i++)
                 {
-                    var symbol = value[i];
+                    var symbol = text[i];
 
                     if (symbol == '[' || symbol == '{')
                     {
@@ -569,7 +519,7 @@ namespace AutoClicker.Utils
                     }
                     else if (symbol == '"')
                     {
-                        i = i.AppendUntilStringEnd(value, builder);
+                        i = i.AppendUntilStringEnd(text, builder);
                     }
                     else if (symbol == ',' || symbol == ':')
                     {
@@ -597,13 +547,12 @@ namespace AutoClicker.Utils
             else return new string[0];
         }
 
+        public static bool StartsAndEndsWith(this string text, char start, char end) => text.First() == start && text.Last() == end;
+
         public static string GetMemberName<Member>(this Member member) where Member : MemberInfo
         {
-            if (!member.IsDefined(typeof(JsonIgnoreAttribute), true))
-            {
-                return member.Name;
-            }
-            else return string.Empty;
+            if (!member.IsDefined(typeof(JsonIgnoreAttribute), true)) return member.Name;
+            else return null;
         }
 
         public static Dictionary<string, Member> GetMembersName<Member>(this Member[] members) where Member : MemberInfo
@@ -614,16 +563,16 @@ namespace AutoClicker.Utils
             {
                 var name = member.GetMemberName();
 
-                if (!string.IsNullOrWhiteSpace(name))
-                {
-                    nameToMember.Add(member.Name, member);
-                }
+                if (name.IsNotEmtry()) nameToMember.Add(member.Name, member);
             }
 
             return nameToMember;
         }
     }
+}
 
+namespace AutoClicker.Utils.Json.Attributes
+{
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class JsonIgnoreAttribute : Attribute { }
 }

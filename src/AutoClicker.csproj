@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>AutoClicker</RootNamespace>
     <AssemblyName>AutoClicker</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -51,10 +51,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icons\icon.ico</ApplicationIcon>
+    <ApplicationIcon>Logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Messaging" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -63,12 +64,57 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\ClickData.cs" />
+    <Compile Include="Controls\DarkButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\DarkTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\StringListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MenuRadioButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\HeaderPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MenuPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Data\ClickList.cs" />
     <Compile Include="Data\Mouse.cs" />
-    <Compile Include="Data\MouseEventArgs.cs" />
     <Compile Include="Data\Position.cs" />
     <Compile Include="Data\MouseType.cs" />
     <Compile Include="Data\Click.cs" />
+    <Compile Include="Forms\FormBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormBase.Designer.cs">
+      <DependentUpon>FormBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ReusableClickForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ReusableClickForm.Designer.cs">
+      <DependentUpon>ReusableClickForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ReusableSettingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ReusableSettingForm.Designer.cs">
+      <DependentUpon>ReusableSettingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ReusableUserControl.Designer.cs">
+      <DependentUpon>ReusableUserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Worker\Reusable\ClickerReusableWorker.cs" />
+    <Compile Include="UserControls\QueteUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\QueteUserControl.Designer.cs">
+      <DependentUpon>QueteUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,6 +122,12 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Data\MouseData.cs" />
+    <Compile Include="Forms\RenameForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RenameForm.Designer.cs">
+      <DependentUpon>RenameForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -83,30 +135,28 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ReusableUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Utils\Colors.cs" />
     <Compile Include="Utils\Extensions.cs" />
+    <Compile Include="Utils\DirectoryManager.cs" />
     <Compile Include="Utils\JsonConvert.cs" />
-    <Compile Include="Data\WorkerType.cs" />
-    <Compile Include="Worker\RecorderWorker.cs" />
-    <Compile Include="Worker\AbstractWorker.cs" />
-    <Compile Include="Worker\ClickerWorker.cs" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="Worker\Quete\RecorderQueteWorker.cs" />
+    <Compile Include="Worker\WorkerBase.cs" />
+    <Compile Include="Worker\Quete\ClickerQueteWorker.cs" />
+    <EmbeddedResource Include="Forms\ReusableClickForm.resx">
+      <DependentUpon>ReusableClickForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ReusableUserControl.resx">
+      <DependentUpon>ReusableUserControl.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="App.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -116,7 +166,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icons\icon.ico" />
+    <Content Include="Logo.ico" />
+    <None Include="Resources\Images\ClickImage.png" />
+    <None Include="Resources\Images\HeaderCloseButtonImage.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

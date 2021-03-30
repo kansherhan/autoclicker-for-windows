@@ -1,22 +1,33 @@
-﻿using System.Drawing;
-
-namespace AutoClicker.Data
+﻿namespace AutoClicker.Data
 {
     public class Click
     {
-        public int Milisecond { get; set; }
+        public int Interval { get; set; }
 
-        public Position CursorPosition { get; set; }
+        public Position Cursor { get; set; }
 
         public MouseType MouseType { get; set; }
 
-        public Click(int milisecond, MouseType mouseType, Point cursorPosition)
+        public Click(int interval, MouseType type, Position cursor)
         {
-            Milisecond = milisecond;
+            Interval = interval;
 
-            MouseType = mouseType;
+            MouseType = type;
 
-            CursorPosition = cursorPosition;
+            Cursor = cursor;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Click click)
+            {
+                var pos = Cursor == click.Cursor;
+                var type = MouseType == click.MouseType;
+                var second = Interval == click.Interval;
+
+                return pos && type && second;
+            }
+            else return base.Equals(obj);
         }
     }
 }
