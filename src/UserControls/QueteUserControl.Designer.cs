@@ -38,8 +38,8 @@ namespace AutoClicker.UserControls
             this.DelateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.UpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RecordPanel = new System.Windows.Forms.Panel();
-            this.StartButton = new AutoClicker.Controls.DarkButton();
             this.RecordButton = new AutoClicker.Controls.DarkButton();
+            this.StartButton = new AutoClicker.Controls.DarkButton();
             this.RecordListViewContentMenuStrip.SuspendLayout();
             this.RecordPanel.SuspendLayout();
             this.SuspendLayout();
@@ -66,31 +66,36 @@ namespace AutoClicker.UserControls
             // 
             // RecordListViewContentMenuStrip
             // 
+            this.RecordListViewContentMenuStrip.AutoSize = false;
             this.RecordListViewContentMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.UpdateToolStripMenuItem,
             this.RenameToolStripMenuItem,
-            this.DelateToolStripMenuItem,
-            this.UpdateToolStripMenuItem});
+            this.DelateToolStripMenuItem});
             this.RecordListViewContentMenuStrip.Name = "RecordListViewContentMenuStrip";
-            this.RecordListViewContentMenuStrip.Size = new System.Drawing.Size(118, 70);
+            this.RecordListViewContentMenuStrip.ShowImageMargin = false;
+            this.RecordListViewContentMenuStrip.Size = new System.Drawing.Size(160, 92);
             // 
             // RenameToolStripMenuItem
             // 
             this.RenameToolStripMenuItem.Name = "RenameToolStripMenuItem";
-            this.RenameToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.RenameToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.RenameToolStripMenuItem.Text = "Rename";
             this.RenameToolStripMenuItem.Click += new System.EventHandler(this.RenameButton_Click);
             // 
             // DelateToolStripMenuItem
             // 
+            this.DelateToolStripMenuItem.Checked = true;
+            this.DelateToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.DelateToolStripMenuItem.Name = "DelateToolStripMenuItem";
-            this.DelateToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.DelateToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.DelateToolStripMenuItem.Text = "Delate";
             this.DelateToolStripMenuItem.Click += new System.EventHandler(this.DeleteRecordButton_Click);
             // 
             // UpdateToolStripMenuItem
             // 
+            this.UpdateToolStripMenuItem.AutoSize = false;
             this.UpdateToolStripMenuItem.Name = "UpdateToolStripMenuItem";
-            this.UpdateToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.UpdateToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.UpdateToolStripMenuItem.Text = "Update";
             this.UpdateToolStripMenuItem.Click += new System.EventHandler(this.UpdateButton_Click);
             // 
@@ -104,19 +109,6 @@ namespace AutoClicker.UserControls
             this.RecordPanel.Size = new System.Drawing.Size(650, 361);
             this.RecordPanel.TabIndex = 19;
             // 
-            // StartButton
-            // 
-            this.StartButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(42)))), ((int)(((byte)(47)))));
-            this.StartButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.StartButton.ForeColor = System.Drawing.Color.White;
-            this.StartButton.Location = new System.Drawing.Point(3, 3);
-            this.StartButton.Name = "StartButton";
-            this.StartButton.Size = new System.Drawing.Size(136, 30);
-            this.StartButton.TabIndex = 20;
-            this.StartButton.Text = "Start";
-            this.StartButton.UseVisualStyleBackColor = false;
-            this.StartButton.Click += new System.EventHandler(this.StartButton_Click);
-            // 
             // RecordButton
             // 
             this.RecordButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(42)))), ((int)(((byte)(47)))));
@@ -129,6 +121,19 @@ namespace AutoClicker.UserControls
             this.RecordButton.Text = "Record";
             this.RecordButton.UseVisualStyleBackColor = false;
             this.RecordButton.Click += new System.EventHandler(this.RecordingButton_Click);
+            // 
+            // StartButton
+            // 
+            this.StartButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(42)))), ((int)(((byte)(47)))));
+            this.StartButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.StartButton.ForeColor = System.Drawing.Color.White;
+            this.StartButton.Location = new System.Drawing.Point(3, 3);
+            this.StartButton.Name = "StartButton";
+            this.StartButton.Size = new System.Drawing.Size(136, 30);
+            this.StartButton.TabIndex = 20;
+            this.StartButton.Text = "Start";
+            this.StartButton.UseVisualStyleBackColor = false;
+            this.StartButton.Click += new System.EventHandler(this.StartButton_Click);
             // 
             // QueteUserControl
             // 

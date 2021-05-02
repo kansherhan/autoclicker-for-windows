@@ -13,7 +13,7 @@ namespace AutoClicker.Worker.Reusable
 
         private readonly ClickList data;
 
-        public ClickerReusableWorker(ClickList data, int iteration, int increment) 
+        public ClickerReusableWorker(ClickList data, int iteration, int increment)
             : base(WorkerType.Clicker, increment)
         {
             this.iteration = iteration;
