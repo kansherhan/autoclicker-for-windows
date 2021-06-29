@@ -1,5 +1,5 @@
 ﻿using AutoClicker.Data;
-using AutoClicker.Utils;
+using AutoClicker.Utils.Extensions;
 using System.Drawing;
 using System.Windows.Forms;
 

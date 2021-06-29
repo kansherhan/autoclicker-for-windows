@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoClicker.Utils
+namespace AutoClicker.Utils.Extensions
 {
     public static class Extensions
     {

@@ -142,6 +142,9 @@
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IOFile.cs" />
     <Compile Include="Utils\JsonConvert.cs" />
+    <Compile Include="Utils\IniParser\IniConvert.cs" />
+    <Compile Include="Utils\IniParser\Extensions.cs" />
+    <Compile Include="Utils\IniParser\IniIgnorePropertyAttribute.cs" />
     <Compile Include="Worker\Quete\RecorderQueteWorker.cs" />
     <Compile Include="Worker\WorkerBase.cs" />
     <Compile Include="Worker\Quete\ClickerQueteWorker.cs" />

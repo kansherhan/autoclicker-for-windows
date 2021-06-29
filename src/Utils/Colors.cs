@@ -9,7 +9,7 @@ namespace AutoClicker.Utils
         public static readonly Color Dark = Color.FromArgb(12, 22, 27);
         public static readonly Color BlueLight = Color.FromArgb(5, 157, 232);
 
-        public static Color Colorize()
+        public static Color ChangedColor(Color color, float response)
         {
             return Color.White;
         }
