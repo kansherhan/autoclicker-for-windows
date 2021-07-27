@@ -12,8 +12,8 @@ namespace AutoClicker.Utils.IniParser
 
         public static object FromTo(Type type, string iniContent, char seporator = '\n')
         {
-			if (!type.IsClass) throw new ArgumentException("Тип должен быть классом");
-			
+            if (!type.IsClass) throw new ArgumentException("Тип должен быть классом");
+            
             var properties = type.GetProperties(Flags).GetMemberInfos();
             var fields = type.GetFields(Flags).GetMemberInfos();
 
@@ -38,13 +38,13 @@ namespace AutoClicker.Utils.IniParser
 
             return instance;
         }
-		
-		public static T FromTo<T>(string iniContent, char seporator = '\n') where T: class
-		{
-			var type = typeof(T);
-			
-			return (T)FromTo(type, iniContent, seporator);
-		}
+        
+        public static T FromTo<T>(string iniContent, char seporator = '\n') where T: class
+        {
+            var type = typeof(T);
+            
+            return (T)FromTo(type, iniContent, seporator);
+        }
 
         public static string ToFrom(object obj, char seporator = '\n')
         {
@@ -106,36 +106,36 @@ namespace AutoClicker.Utils.IniParser
 
                 return string.Format("{0},{1},{2},{4}", color.A, color.R, color.G, color.B);
             }
-			else if (type.IsArray)
-			{
-				var arrayType = type.GetElementType();
-				var writer = new StringBuilder();
-				var array = (Array)obj;
-				
-				if (arrayType.IsClass)
-				{
-					for (int i = 0; i < array.Length; i++)
-					{
-						writer.Append(IniConvert.ToFrom(array.GetValue(i), '+'));
-						
-						if (i + 1 < array.Length) writer.Append(";");
-					}
-					
-					return writer.ToString();
-				}
-				else if (arrayType.IsPrimitive || arrayType == typeof(string))
-				{
-					for (int i = 0; i < array.Length; i++)
-					{
-						writer.Append(SerializableObject(array.GetValue(i)));
-						
-						if (i + 1 < array.Length) writer.Append(";");
-					}
-					
-					return writer.ToString();
-				}
-			}
-			
+            else if (type.IsArray)
+            {
+                var arrayType = type.GetElementType();
+                var writer = new StringBuilder();
+                var array = (Array)obj;
+                
+                if (arrayType.IsClass)
+                {
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        writer.Append(IniConvert.ToFrom(array.GetValue(i), '+'));
+                        
+                        if (i + 1 < array.Length) writer.Append(";");
+                    }
+                    
+                    return writer.ToString();
+                }
+                else if (arrayType.IsPrimitive || arrayType == typeof(string))
+                {
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        writer.Append(SerializableObject(array.GetValue(i)));
+                        
+                        if (i + 1 < array.Length) writer.Append(";");
+                    }
+                    
+                    return writer.ToString();
+                }
+            }
+            
             throw new SerializationException("Такой тип переменной не поддерживаеться: " + type.ToString());
         }
 
@@ -183,31 +183,31 @@ namespace AutoClicker.Utils.IniParser
                     throw new ArgumentException("Количество аргументов не достаточно: " + type.ToString());
                 }
             }
-			else if (type.IsArray)
-			{
-				var arrayType = type.GetElementType();
-				var iniArray = iniValue.IniArraySplit();
-				var array = Array.CreateInstance(arrayType, iniArray.Length);
-				
-				if (type.IsClass)
-				{
-					for (int i = 0; i < array.Length; i++)
-					{
-						array.SetValue(FromTo(arrayType, iniArray[i], '+'), i);
-					}
-				}
-				else if (type.IsPrimitive)
-				{
-					for (int i = 0; i < array.Length; i++)
-					{
-						array.SetValue(DeserializableObject(arrayType, iniArray[i]), i);
-					}
-					
-					return array;
-				}
-			}
-			
-			throw new SerializationException("Такой тип переменной не поддерживаеться: " + type.ToString());
+            else if (type.IsArray)
+            {
+                var arrayType = type.GetElementType();
+                var iniArray = iniValue.IniArraySplit();
+                var array = Array.CreateInstance(arrayType, iniArray.Length);
+                
+                if (type.IsClass)
+                {
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        array.SetValue(FromTo(arrayType, iniArray[i], '+'), i);
+                    }
+                }
+                else if (type.IsPrimitive)
+                {
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        array.SetValue(DeserializableObject(arrayType, iniArray[i]), i);
+                    }
+                    
+                    return array;
+                }
+            }
+            
+            throw new SerializationException("Такой тип переменной не поддерживаеться: " + type.ToString());
         }
     }
 }

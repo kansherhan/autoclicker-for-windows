@@ -8,27 +8,27 @@ namespace AutoClicker.Utils.IniParser
     {
         public static string[] IniSplit(this string content, char seporator = '\n')
         {
-			var lines = content.Split(seporator);
-			var elements = new List<string>();
+            var lines = content.Split(seporator);
+            var elements = new List<string>();
 
-			foreach (var line in lines)
-			{
-				var parts = line.Split('=');
+            foreach (var line in lines)
+            {
+                var parts = line.Split('=');
 
-				if (parts.Length >= 2)
-				{
-					elements.Add(parts[0]);
-					elements.Add(parts[1]);
-				}
-			}
+                if (parts.Length >= 2)
+                {
+                    elements.Add(parts[0]);
+                    elements.Add(parts[1]);
+                }
+            }
 
-			return elements.ToArray();
+            return elements.ToArray();
         }
-		
-		public static string[] IniArraySplit(this string content)
-		{
-			return content.Split(';');
-		}
+        
+        public static string[] IniArraySplit(this string content)
+        {
+            return content.Split(';');
+        }
 
         public static bool IsSerializable<T>(this T member) where T: MemberInfo
         {
